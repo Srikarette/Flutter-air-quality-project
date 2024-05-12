@@ -1,0 +1,10 @@
+name: airQc_apps
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+dev_dependencies:
+  melos: ^6.0.0
+dependencies:
+  dio: ^5.4.3+1
+  get_it: ^7.7.0
+  loading_indicator: ^3.1.1

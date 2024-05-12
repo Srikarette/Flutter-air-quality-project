@@ -1,0 +1,5 @@
+name: airQc_apps
+
+packages:
+  - apps/**
+  - packages/**
