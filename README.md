@@ -1,8 +1,6 @@
 FLUTTER PROJECT GUILDLINE:
 
 
-USEFUL LINK:
-
   DISCORD: 
   
       https://discord.gg/QZzyTfTd
