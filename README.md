@@ -1,9 +1,13 @@
 FLUTTER PROJECT GUILDLINE:
 
   USEFUL LINK:
+  
     DISCORD: https://discord.gg/QZzyTfTd
+    
     DESIGN FIGMA: https://www.figma.com/design/r3DgqI8YwZYfINHoBaxOJN/air-quality-plus?node-id=0%3A1&t=GQWqvARPpzTgCdiC-1
+    
     JIRA:
+    
     API: https://aqicn.org/json-api/doc/
 
 API KEY TOKEN: 2190be2f9c41f96905ba4fc092a664c0ad2d87b4
