@@ -9,7 +9,9 @@ FLUTTER PROJECT GUILDLINE:
   
       https://www.figma.com/design/r3DgqI8YwZYfINHoBaxOJN/air-quality-plus?node-id=0%3A1&t=GQWqvARPpzTgCdiC-1
   
-  JIRA:
+  JIRA: 
+      
+      https://opkungkeke.atlassian.net/jira/software/projects/KAN/boards/1
   
 API: 
     
