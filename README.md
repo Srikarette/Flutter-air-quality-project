@@ -3,13 +3,19 @@ FLUTTER PROJECT GUILDLINE:
 
 USEFUL LINK:
 
-  DISCORD: https://discord.gg/QZzyTfTd
+  DISCORD: 
   
-  DESIGN FIGMA: https://www.figma.com/design/r3DgqI8YwZYfINHoBaxOJN/air-quality-plus?node-id=0%3A1&t=GQWqvARPpzTgCdiC-1
+      https://discord.gg/QZzyTfTd
+  
+  DESIGN FIGMA: 
+  
+      https://www.figma.com/design/r3DgqI8YwZYfINHoBaxOJN/air-quality-plus?node-id=0%3A1&t=GQWqvARPpzTgCdiC-1
   
   JIRA:
   
-API: https://aqicn.org/json-api/doc/
+API: 
+    
+    https://aqicn.org/json-api/doc/
 
     API KEY TOKEN: 2190be2f9c41f96905ba4fc092a664c0ad2d87b4
 
@@ -37,8 +43,8 @@ BRACH NAME RULE:
 
 COMMIT RULE:
 
-        IF IT'S A NEW FEATURE DO : feat: i have gone crzy. [AQ-10xx]
-        IF IT'S A FIX DO : fix: i am good again. [AQ-20xx]
+    IF IT'S A NEW FEATURE DO : feat: i have gone crzy. [AQ-10xx]
+    IF IT'S A FIX DO : fix: i am good again. [AQ-20xx]
 
 
 
