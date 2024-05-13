@@ -30,13 +30,13 @@ NAMING RULE:
 
   
 BRACH NAME RULE:
-    CREATE NEW BRACH EXAMPLE:
-          IF IT'S A NEW FEATURE DO : features/example-brach-AQ-10xx(GET THIS BUMBER ON JIRA)
-          IF IT'S A FIX DO : fix/example-brach-AQ-10xx(GET THIS BUMBER ON JIRA)
+
+    IF IT'S A NEW FEATURE DO : features/example-brach-AQ-10xx(GET THIS BUMBER ON JIRA)
+    IF IT'S A FIX DO : fix/example-brach-AQ-10xx(GET THIS BUMBER ON JIRA)
 
 
 COMMIT RULE:
-    WRITE COMMIT EXAMPLE:
+
         IF IT'S A NEW FEATURE DO : feat: i have gone crzy. [AQ-10xx]
         IF IT'S A FIX DO : fix: i am good again. [AQ-20xx]
 
