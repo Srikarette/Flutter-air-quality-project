@@ -9,9 +9,9 @@ USEFUL LINK:
   
   JIRA:
   
-  API: https://aqicn.org/json-api/doc/
+API: https://aqicn.org/json-api/doc/
 
-API KEY TOKEN: 2190be2f9c41f96905ba4fc092a664c0ad2d87b4
+    API KEY TOKEN: 2190be2f9c41f96905ba4fc092a664c0ad2d87b4
 
 
 
@@ -31,14 +31,14 @@ NAMING RULE:
   
 BRACH NAME RULE:
     CREATE NEW BRACH EXAMPLE:
-    IF IT'S A NEW FEATURE DO : features/example-brach-AQ-10xx(GET THIS BUMBER ON JIRA)
-    IF IT'S A FIX DO : fix/example-brach-AQ-10xx(GET THIS BUMBER ON JIRA)
+          IF IT'S A NEW FEATURE DO : features/example-brach-AQ-10xx(GET THIS BUMBER ON JIRA)
+          IF IT'S A FIX DO : fix/example-brach-AQ-10xx(GET THIS BUMBER ON JIRA)
 
 
 COMMIT RULE:
     WRITE COMMIT EXAMPLE:
-    IF IT'S A NEW FEATURE DO : feat: i have gone crzy. [AQ-10xx]
-    IF IT'S A FIX DO : fix: i am good again. [AQ-20xx]
+        IF IT'S A NEW FEATURE DO : feat: i have gone crzy. [AQ-10xx]
+        IF IT'S A FIX DO : fix: i am good again. [AQ-20xx]
 
 
 
