@@ -29,7 +29,7 @@ RULE:
 
 NAMING RULE:
 
-    FILE NAMIMG = example-class-01.dart
+    FILE NAMIMG = example_class_01.dart
     CLASS NAMING = class ExampleScreen {}
     IMAGES = image-navbar-home.png
     ICON = icon-navbar-setting-png
