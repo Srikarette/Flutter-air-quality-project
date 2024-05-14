@@ -5,8 +5,7 @@ import 'package:product/features/home/screen/manage_location_screen.dart';
 
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, required this.title});
-  final String title;
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
