@@ -1,8 +1,10 @@
+
+
 import 'package:product/features/home/data/models/weather.dart';
 
 class WeatherToDisplay {
   String cityName;
-  List<Daily> pm25Forecast;
+  List<Pm25> pm25Forecast;
   String updateTime;
 
   WeatherToDisplay({
@@ -12,17 +14,25 @@ class WeatherToDisplay {
   });
 
   factory WeatherToDisplay.fromAirQualityData(AirQualityData airQualityData) {
+    String cityName = airQualityData.data?.city?.name ?? "";
+    String updateTime = airQualityData.data?.time?.iso ?? "";
+
+    List<Pm25> pm25Forecast = [];
+    if (airQualityData.data?.forecast?.daily?.pm25 != null) {
+      pm25Forecast = airQualityData.data!.forecast!.daily!.pm25!;
+    }
+
     return WeatherToDisplay(
-      cityName: airQualityData.data.city.name,
-      pm25Forecast: airQualityData.data.forecast.pm25,
-      updateTime: airQualityData.data.time.iso,
+      cityName: cityName,
+      pm25Forecast: pm25Forecast,
+      updateTime: updateTime,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'cityName': cityName,
-      'pm25Forecast': pm25Forecast.map((i) => i.toJson()).toList(),
+      'pm25Forecast': pm25Forecast.map((pm25) => pm25.toJson()).toList(),
       'updateTime': updateTime,
     };
   }

@@ -1,305 +1,694 @@
 class AirQualityData {
-  String status;
-  Data data;
+  AirQualityData({
+    this.status,
+    this.data,});
 
-  AirQualityData({required this.status, required this.data});
-
-  factory AirQualityData.fromJson(Map<String, dynamic> json) {
-    return AirQualityData(
-      status: json['status'],
-      data: Data.fromJson(json['data']),
-    );
+  AirQualityData.fromJson(dynamic json) {
+    status = json['status'];
+    data = json['data'] != null ? Data.fromJson(json['data']) : null;
   }
-
+  String? status;
+  Data? data;
+  AirQualityData copyWith({  String? status,
+    Data? data,
+  }) => AirQualityData(  status: status ?? this.status,
+    data: data ?? this.data,
+  );
   Map<String, dynamic> toJson() {
-    return {
-      'status': status,
-      'data': data.toJson(),
-    };
+    final map = <String, dynamic>{};
+    map['status'] = status;
+    if (data != null) {
+      map['data'] = data?.toJson();
+    }
+    return map;
   }
+
 }
 
 class Data {
-  int aqi;
-  int idx;
-  List<Attribution> attributions;
-  City city;
-  String dominentpol;
-  Iaqi iaqi;
-  Time time;
-  Forecast forecast;
-
   Data({
-    required this.aqi,
-    required this.idx,
-    required this.attributions,
-    required this.city,
-    required this.dominentpol,
-    required this.iaqi,
-    required this.time,
-    required this.forecast,
-  });
+    this.aqi,
+    this.idx,
+    this.attributions,
+    this.city,
+    this.dominentpol,
+    this.iaqi,
+    this.time,
+    this.forecast,
+    this.debug,});
 
-  factory Data.fromJson(Map<String, dynamic> json) {
-    var attributionsList = json['attributions'] as List;
-    List<Attribution> attributions = attributionsList.map((i) => Attribution.fromJson(i)).toList();
-
-    return Data(
-      aqi: json['aqi'],
-      idx: json['idx'],
-      attributions: attributions,
-      city: City.fromJson(json['city']),
-      dominentpol: json['dominentpol'],
-      iaqi: Iaqi.fromJson(json['iaqi']),
-      time: Time.fromJson(json['time']),
-      forecast: Forecast.fromJson(json['forecast']),
-    );
+  Data.fromJson(dynamic json) {
+    aqi = json['aqi'];
+    idx = json['idx'];
+    if (json['attributions'] != null) {
+      attributions = [];
+      json['attributions'].forEach((v) {
+        attributions?.add(Attributions.fromJson(v));
+      });
+    }
+    city = json['city'] != null ? City.fromJson(json['city']) : null;
+    dominentpol = json['dominentpol'];
+    iaqi = json['iaqi'] != null ? Iaqi.fromJson(json['iaqi']) : null;
+    time = json['time'] != null ? Time.fromJson(json['time']) : null;
+    forecast = json['forecast'] != null ? Forecast.fromJson(json['forecast']) : null;
+    debug = json['debug'] != null ? Debug.fromJson(json['debug']) : null;
   }
-
+  num? aqi;
+  num? idx;
+  List<Attributions>? attributions;
+  City? city;
+  String? dominentpol;
+  Iaqi? iaqi;
+  Time? time;
+  Forecast? forecast;
+  Debug? debug;
+  Data copyWith({  num? aqi,
+    num? idx,
+    List<Attributions>? attributions,
+    City? city,
+    String? dominentpol,
+    Iaqi? iaqi,
+    Time? time,
+    Forecast? forecast,
+    Debug? debug,
+  }) => Data(  aqi: aqi ?? this.aqi,
+    idx: idx ?? this.idx,
+    attributions: attributions ?? this.attributions,
+    city: city ?? this.city,
+    dominentpol: dominentpol ?? this.dominentpol,
+    iaqi: iaqi ?? this.iaqi,
+    time: time ?? this.time,
+    forecast: forecast ?? this.forecast,
+    debug: debug ?? this.debug,
+  );
   Map<String, dynamic> toJson() {
-    return {
-      'aqi': aqi,
-      'idx': idx,
-      'attributions': attributions.map((i) => i.toJson()).toList(),
-      'city': city.toJson(),
-      'dominentpol': dominentpol,
-      'iaqi': iaqi.toJson(),
-      'time': time.toJson(),
-      'forecast': forecast.toJson(),
-    };
+    final map = <String, dynamic>{};
+    map['aqi'] = aqi;
+    map['idx'] = idx;
+    if (attributions != null) {
+      map['attributions'] = attributions?.map((v) => v.toJson()).toList();
+    }
+    if (city != null) {
+      map['city'] = city?.toJson();
+    }
+    map['dominentpol'] = dominentpol;
+    if (iaqi != null) {
+      map['iaqi'] = iaqi?.toJson();
+    }
+    if (time != null) {
+      map['time'] = time?.toJson();
+    }
+    if (forecast != null) {
+      map['forecast'] = forecast?.toJson();
+    }
+    if (debug != null) {
+      map['debug'] = debug?.toJson();
+    }
+    return map;
   }
+
 }
 
-class Attribution {
-  String url;
-  String name;
-  String? logo;
+class Debug {
+  Debug({
+    this.sync,});
 
-  Attribution({required this.url, required this.name, this.logo});
-
-  factory Attribution.fromJson(Map<String, dynamic> json) {
-    return Attribution(
-      url: json['url'],
-      name: json['name'],
-      logo: json['logo'],
-    );
+  Debug.fromJson(dynamic json) {
+    sync = json['sync'];
   }
-
+  String? sync;
+  Debug copyWith({  String? sync,
+  }) => Debug(  sync: sync ?? this.sync,
+  );
   Map<String, dynamic> toJson() {
-    return {
-      'url': url,
-      'name': name,
-      'logo': logo,
-    };
-  }
-}
-
-class City {
-  List<double> geo;
-  String name;
-  String url;
-  String location;
-
-  City({required this.geo, required this.name, required this.url, required this.location});
-
-  factory City.fromJson(Map<String, dynamic> json) {
-    return City(
-      geo: List<double>.from(json['geo']),
-      name: json['name'],
-      url: json['url'],
-      location: json['location'],
-    );
+    final map = <String, dynamic>{};
+    map['sync'] = sync;
+    return map;
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'geo': geo,
-      'name': name,
-      'url': url,
-      'location': location,
-    };
-  }
-}
-
-class Iaqi {
-  IaqiValue h;
-  IaqiValue no2;
-  IaqiValue o3;
-  IaqiValue p;
-  IaqiValue pm10;
-  IaqiValue pm25;
-  IaqiValue so2;
-  IaqiValue t;
-  IaqiValue w;
-
-  Iaqi({
-    required this.h,
-    required this.no2,
-    required this.o3,
-    required this.p,
-    required this.pm10,
-    required this.pm25,
-    required this.so2,
-    required this.t,
-    required this.w,
-  });
-
-  factory Iaqi.fromJson(Map<String, dynamic> json) {
-    return Iaqi(
-      h: IaqiValue.fromJson(json['h']),
-      no2: IaqiValue.fromJson(json['no2']),
-      o3: IaqiValue.fromJson(json['o3']),
-      p: IaqiValue.fromJson(json['p']),
-      pm10: IaqiValue.fromJson(json['pm10']),
-      pm25: IaqiValue.fromJson(json['pm25']),
-      so2: IaqiValue.fromJson(json['so2']),
-      t: IaqiValue.fromJson(json['t']),
-      w: IaqiValue.fromJson(json['w']),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'h': h.toJson(),
-      'no2': no2.toJson(),
-      'o3': o3.toJson(),
-      'p': p.toJson(),
-      'pm10': pm10.toJson(),
-      'pm25': pm25.toJson(),
-      'so2': so2.toJson(),
-      't': t.toJson(),
-      'w': w.toJson(),
-    };
-  }
-}
-
-class IaqiValue {
-  double v;
-
-  IaqiValue({required this.v});
-
-  factory IaqiValue.fromJson(Map<String, dynamic> json) {
-    return IaqiValue(
-      v: json['v'].toDouble(),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'v': v,
-    };
-  }
-}
-
-class Time {
-  String s;
-  String tz;
-  int v;
-  String iso;
-
-  Time({required this.s, required this.tz, required this.v, required this.iso});
-
-  factory Time.fromJson(Map<String, dynamic> json) {
-    return Time(
-      s: json['s'],
-      tz: json['tz'],
-      v: json['v'],
-      iso: json['iso'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      's': s,
-      'tz': tz,
-      'v': v,
-      'iso': iso,
-    };
-  }
 }
 
 class Forecast {
-  List<Daily> o3;
-  List<Daily> pm10;
-  List<Daily> pm25;
-  List<Uvi> uvi;
+  Forecast({
+    this.daily,});
 
-  Forecast({required this.o3, required this.pm10, required this.pm25, required this.uvi});
-
-  factory Forecast.fromJson(Map<String, dynamic> json) {
-    var o3List = json['o3'] as List;
-    var pm10List = json['pm10'] as List;
-    var pm25List = json['pm25'] as List;
-    var uviList = json['uvi'] as List;
-
-    return Forecast(
-      o3: o3List.map((i) => Daily.fromJson(i)).toList(),
-      pm10: pm10List.map((i) => Daily.fromJson(i)).toList(),
-      pm25: pm25List.map((i) => Daily.fromJson(i)).toList(),
-      uvi: uviList.map((i) => Uvi.fromJson(i)).toList(),
-    );
+  Forecast.fromJson(dynamic json) {
+    daily = json['daily'] != null ? Daily.fromJson(json['daily']) : null;
   }
-
+  Daily? daily;
+  Forecast copyWith({  Daily? daily,
+  }) => Forecast(  daily: daily ?? this.daily,
+  );
   Map<String, dynamic> toJson() {
-    return {
-      'o3': o3.map((i) => i.toJson()).toList(),
-      'pm10': pm10.map((i) => i.toJson()).toList(),
-      'pm25': pm25.map((i) => i.toJson()).toList(),
-      'uvi': uvi.map((i) => i.toJson()).toList(),
-    };
+    final map = <String, dynamic>{};
+    if (daily != null) {
+      map['daily'] = daily?.toJson();
+    }
+    return map;
   }
+
 }
 
 class Daily {
-  double avg;
-  String day;
-  double max;
-  double min;
+  Daily({
+    this.o3,
+    this.pm10,
+    this.pm25,
+    this.uvi,});
 
-  Daily({required this.avg, required this.day, required this.max, required this.min});
-
-  factory Daily.fromJson(Map<String, dynamic> json) {
-    return Daily(
-      avg: json['avg'].toDouble(),
-      day: json['day'],
-      max: json['max'].toDouble(),
-      min: json['min'].toDouble(),
-    );
+  Daily.fromJson(dynamic json) {
+    if (json['o3'] != null) {
+      o3 = [];
+      json['o3'].forEach((v) {
+        o3?.add(O3.fromJson(v));
+      });
+    }
+    if (json['pm10'] != null) {
+      pm10 = [];
+      json['pm10'].forEach((v) {
+        pm10?.add(Pm10.fromJson(v));
+      });
+    }
+    if (json['pm25'] != null) {
+      pm25 = [];
+      json['pm25'].forEach((v) {
+        pm25?.add(Pm25.fromJson(v));
+      });
+    }
+    if (json['uvi'] != null) {
+      uvi = [];
+      json['uvi'].forEach((v) {
+        uvi?.add(Uvi.fromJson(v));
+      });
+    }
   }
-
+  List<O3>? o3;
+  List<Pm10>? pm10;
+  List<Pm25>? pm25;
+  List<Uvi>? uvi;
+  Daily copyWith({  List<O3>? o3,
+    List<Pm10>? pm10,
+    List<Pm25>? pm25,
+    List<Uvi>? uvi,
+  }) => Daily(  o3: o3 ?? this.o3,
+    pm10: pm10 ?? this.pm10,
+    pm25: pm25 ?? this.pm25,
+    uvi: uvi ?? this.uvi,
+  );
   Map<String, dynamic> toJson() {
-    return {
-      'avg': avg,
-      'day': day,
-      'max': max,
-      'min': min,
-    };
+    final map = <String, dynamic>{};
+    if (o3 != null) {
+      map['o3'] = o3?.map((v) => v.toJson()).toList();
+    }
+    if (pm10 != null) {
+      map['pm10'] = pm10?.map((v) => v.toJson()).toList();
+    }
+    if (pm25 != null) {
+      map['pm25'] = pm25?.map((v) => v.toJson()).toList();
+    }
+    if (uvi != null) {
+      map['uvi'] = uvi?.map((v) => v.toJson()).toList();
+    }
+    return map;
   }
+
 }
 
 class Uvi {
-  double avg;
-  String day;
-  double max;
-  double min;
+  Uvi({
+    this.avg,
+    this.day,
+    this.max,
+    this.min,});
 
-  Uvi({required this.avg, required this.day, required this.max, required this.min});
-
-  factory Uvi.fromJson(Map<String, dynamic> json) {
-    return Uvi(
-      avg: json['avg'].toDouble(),
-      day: json['day'],
-      max: json['max'].toDouble(),
-      min: json['min'].toDouble(),
-    );
+  Uvi.fromJson(dynamic json) {
+    avg = json['avg'];
+    day = json['day'];
+    max = json['max'];
+    min = json['min'];
   }
-
+  num? avg;
+  String? day;
+  num? max;
+  num? min;
+  Uvi copyWith({  num? avg,
+    String? day,
+    num? max,
+    num? min,
+  }) => Uvi(  avg: avg ?? this.avg,
+    day: day ?? this.day,
+    max: max ?? this.max,
+    min: min ?? this.min,
+  );
   Map<String, dynamic> toJson() {
-    return {
-      'avg': avg,
-      'day': day,
-      'max': max,
-      'min': min,
-    };
+    final map = <String, dynamic>{};
+    map['avg'] = avg;
+    map['day'] = day;
+    map['max'] = max;
+    map['min'] = min;
+    return map;
   }
+
+}
+
+class Pm25 {
+  Pm25({
+    this.avg,
+    this.day,
+    this.max,
+    this.min,});
+
+  Pm25.fromJson(dynamic json) {
+    avg = json['avg'];
+    day = json['day'];
+    max = json['max'];
+    min = json['min'];
+  }
+  num? avg;
+  String? day;
+  num? max;
+  num? min;
+  Pm25 copyWith({  num? avg,
+    String? day,
+    num? max,
+    num? min,
+  }) => Pm25(  avg: avg ?? this.avg,
+    day: day ?? this.day,
+    max: max ?? this.max,
+    min: min ?? this.min,
+  );
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['avg'] = avg;
+    map['day'] = day;
+    map['max'] = max;
+    map['min'] = min;
+    return map;
+  }
+
+}
+
+class Pm10 {
+  Pm10({
+    this.avg,
+    this.day,
+    this.max,
+    this.min,});
+
+  Pm10.fromJson(dynamic json) {
+    avg = json['avg'];
+    day = json['day'];
+    max = json['max'];
+    min = json['min'];
+  }
+  num? avg;
+  String? day;
+  num? max;
+  num? min;
+  Pm10 copyWith({  num? avg,
+    String? day,
+    num? max,
+    num? min,
+  }) => Pm10(  avg: avg ?? this.avg,
+    day: day ?? this.day,
+    max: max ?? this.max,
+    min: min ?? this.min,
+  );
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['avg'] = avg;
+    map['day'] = day;
+    map['max'] = max;
+    map['min'] = min;
+    return map;
+  }
+
+}
+
+class O3 {
+  O3({
+    this.avg,
+    this.day,
+    this.max,
+    this.min,});
+
+  O3.fromJson(dynamic json) {
+    avg = json['avg'];
+    day = json['day'];
+    max = json['max'];
+    min = json['min'];
+  }
+  num? avg;
+  String? day;
+  num? max;
+  num? min;
+  O3 copyWith({  num? avg,
+    String? day,
+    num? max,
+    num? min,
+  }) => O3(  avg: avg ?? this.avg,
+    day: day ?? this.day,
+    max: max ?? this.max,
+    min: min ?? this.min,
+  );
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['avg'] = avg;
+    map['day'] = day;
+    map['max'] = max;
+    map['min'] = min;
+    return map;
+  }
+
+}
+
+class Time {
+  Time({
+    this.s,
+    this.tz,
+    this.v,
+    this.iso,});
+
+  Time.fromJson(dynamic json) {
+    s = json['s'];
+    tz = json['tz'];
+    v = json['v'];
+    iso = json['iso'];
+  }
+  String? s;
+  String? tz;
+  num? v;
+  String? iso;
+  Time copyWith({  String? s,
+    String? tz,
+    num? v,
+    String? iso,
+  }) => Time(  s: s ?? this.s,
+    tz: tz ?? this.tz,
+    v: v ?? this.v,
+    iso: iso ?? this.iso,
+  );
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['s'] = s;
+    map['tz'] = tz;
+    map['v'] = v;
+    map['iso'] = iso;
+    return map;
+  }
+
+}
+
+class Iaqi {
+  Iaqi({
+    this.h,
+    this.no2,
+    this.o3,
+    this.p,
+    this.pm10,
+    this.pm25,
+    this.r,
+    this.so2,
+    this.t,
+    this.w,});
+
+  Iaqi.fromJson(dynamic json) {
+    h = json['h'] != null ? H.fromJson(json['h']) : null;
+    no2 = json['no2'] != null ? No2.fromJson(json['no2']) : null;
+    o3 = json['o3'] != null ? O3.fromJson(json['o3']) : null;
+    p = json['p'] != null ? P.fromJson(json['p']) : null;
+    pm10 = json['pm10'] != null ? Pm10.fromJson(json['pm10']) : null;
+    pm25 = json['pm25'] != null ? Pm25.fromJson(json['pm25']) : null;
+    r = json['r'] != null ? R.fromJson(json['r']) : null;
+    so2 = json['so2'] != null ? So2.fromJson(json['so2']) : null;
+    t = json['t'] != null ? T.fromJson(json['t']) : null;
+    w = json['w'] != null ? W.fromJson(json['w']) : null;
+  }
+  H? h;
+  No2? no2;
+  O3? o3;
+  P? p;
+  Pm10? pm10;
+  Pm25? pm25;
+  R? r;
+  So2? so2;
+  T? t;
+  W? w;
+  Iaqi copyWith({  H? h,
+    No2? no2,
+    O3? o3,
+    P? p,
+    Pm10? pm10,
+    Pm25? pm25,
+    R? r,
+    So2? so2,
+    T? t,
+    W? w,
+  }) => Iaqi(  h: h ?? this.h,
+    no2: no2 ?? this.no2,
+    o3: o3 ?? this.o3,
+    p: p ?? this.p,
+    pm10: pm10 ?? this.pm10,
+    pm25: pm25 ?? this.pm25,
+    r: r ?? this.r,
+    so2: so2 ?? this.so2,
+    t: t ?? this.t,
+    w: w ?? this.w,
+  );
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    if (h != null) {
+      map['h'] = h?.toJson();
+    }
+    if (no2 != null) {
+      map['no2'] = no2?.toJson();
+    }
+    if (o3 != null) {
+      map['o3'] = o3?.toJson();
+    }
+    if (p != null) {
+      map['p'] = p?.toJson();
+    }
+    if (pm10 != null) {
+      map['pm10'] = pm10?.toJson();
+    }
+    if (pm25 != null) {
+      map['pm25'] = pm25?.toJson();
+    }
+    if (r != null) {
+      map['r'] = r?.toJson();
+    }
+    if (so2 != null) {
+      map['so2'] = so2?.toJson();
+    }
+    if (t != null) {
+      map['t'] = t?.toJson();
+    }
+    if (w != null) {
+      map['w'] = w?.toJson();
+    }
+    return map;
+  }
+
+}
+
+class W {
+  W({
+    this.v,});
+
+  W.fromJson(dynamic json) {
+    v = json['v'];
+  }
+  num? v;
+  W copyWith({  num? v,
+  }) => W(  v: v ?? this.v,
+  );
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['v'] = v;
+    return map;
+  }
+
+}
+
+class T {
+  T({
+    this.v,});
+
+  T.fromJson(dynamic json) {
+    v = json['v'];
+  }
+  num? v;
+  T copyWith({  num? v,
+  }) => T(  v: v ?? this.v,
+  );
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['v'] = v;
+    return map;
+  }
+
+}
+
+class So2 {
+  So2({
+    this.v,});
+
+  So2.fromJson(dynamic json) {
+    v = json['v'];
+  }
+  num? v;
+  So2 copyWith({  num? v,
+  }) => So2(  v: v ?? this.v,
+  );
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['v'] = v;
+    return map;
+  }
+
+}
+
+class R {
+  R({
+    this.v,});
+
+  R.fromJson(dynamic json) {
+    v = json['v'];
+  }
+  num? v;
+  R copyWith({  num? v,
+  }) => R(  v: v ?? this.v,
+  );
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['v'] = v;
+    return map;
+  }
+
+}
+
+class P {
+  P({
+    this.v,});
+
+  P.fromJson(dynamic json) {
+    v = json['v'];
+  }
+  num? v;
+  P copyWith({  num? v,
+  }) => P(  v: v ?? this.v,
+  );
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['v'] = v;
+    return map;
+  }
+
+}
+
+class No2 {
+  No2({
+    this.v,});
+
+  No2.fromJson(dynamic json) {
+    v = json['v'];
+  }
+  num? v;
+  No2 copyWith({  num? v,
+  }) => No2(  v: v ?? this.v,
+  );
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['v'] = v;
+    return map;
+  }
+
+}
+
+class H {
+  H({
+    this.v,});
+
+  H.fromJson(dynamic json) {
+    v = json['v'];
+  }
+  num? v;
+  H copyWith({  num? v,
+  }) => H(  v: v ?? this.v,
+  );
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['v'] = v;
+    return map;
+  }
+
+}
+
+class City {
+  City({
+    this.geo,
+    this.name,
+    this.url,
+    this.location,});
+
+  City.fromJson(dynamic json) {
+    geo = json['geo'] != null ? json['geo'].cast<num>() : [];
+    name = json['name'];
+    url = json['url'];
+    location = json['location'];
+  }
+  List<num>? geo;
+  String? name;
+  String? url;
+  String? location;
+  City copyWith({  List<num>? geo,
+    String? name,
+    String? url,
+    String? location,
+  }) => City(  geo: geo ?? this.geo,
+    name: name ?? this.name,
+    url: url ?? this.url,
+    location: location ?? this.location,
+  );
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['geo'] = geo;
+    map['name'] = name;
+    map['url'] = url;
+    map['location'] = location;
+    return map;
+  }
+
+}
+
+class Attributions {
+  Attributions({
+    this.url,
+    this.name,
+    this.logo,});
+
+  Attributions.fromJson(dynamic json) {
+    url = json['url'];
+    name = json['name'];
+    logo = json['logo'];
+  }
+  String? url;
+  String? name;
+  String? logo;
+  Attributions copyWith({  String? url,
+    String? name,
+    String? logo,
+  }) => Attributions(  url: url ?? this.url,
+    name: name ?? this.name,
+    logo: logo ?? this.logo,
+  );
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['url'] = url;
+    map['name'] = name;
+    map['logo'] = logo;
+    return map;
+  }
+
 }

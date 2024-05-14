@@ -1,5 +1,6 @@
 import 'package:core_libs/dependency_injection/get_it.dart';
 import 'package:core_libs/network/http_services.dart';
+import 'package:product/features/home/data/models/weatherByCity.dart';
 import '../../domain/port/repository.dart';
 import '../models/weather.dart';
 
@@ -11,16 +12,17 @@ class WeatherRepository implements WeatherDataProjection {
   @override
   Future<AirQualityData> getCurrentLocationWeatherData() async {
     final response = await httpService.get('/feed/here/?token=$token');
-    return AirQualityData.fromJson(response);
+    if (response != null) {
+      return AirQualityData.fromJson(response);
+    } else {
+      throw Exception('Failed to fetch weather data: response is null');
+    }
   }
 
   @override
-  Future<List<AirQualityData>> getWeatherDataByCity(String city) async {
+  Future<AirQualityDataByCity> getWeatherDataByCity(String city) async {
     final response = await httpService.get('/search/?token=$token&keyword=$city');
-    List<AirQualityData> weatherData = [];
-    for (dynamic res in response['data']) { // Assuming the response has a 'data' key
-      weatherData.add(AirQualityData.fromJson(res));
-    }
-    return weatherData;
+    print(response);
+    return AirQualityDataByCity.fromJson(response);
   }
 }
