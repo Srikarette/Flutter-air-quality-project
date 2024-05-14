@@ -1,38 +1,53 @@
+import 'package:core_ui/widgets/elements/botton/primary_button.dart';
 import 'package:flutter/material.dart';
-import 'package:product/features/home/presentation/widgets/component/card_status.dart';
+import 'package:product/features/home/screen/add_location_screen.dart';
+import 'package:product/features/home/screen/manage_location_screen.dart';
+
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, required this.title});
-  final String title;
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        brightness: Brightness.dark, 
+        primaryColor: Colors.black, 
+      ),
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Card Status Example'),
+          title: Text('This text come from product'),
         ),
         body: Center(
-          child: Column(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              CardStatus(value: 25,value1: 75 ,value2: 150),
-              CardStatus(value: 75,value1: 25 ,value2: 250),
-              CardStatus(value: 150,value1: 75 ,value2: 25),
-              CardStatus(value: 250,value1: 25 ,value2: 150),
+            children: [
+              PrimaryButton(
+                title: 'ADD LOCATION',
+                titleColor: Colors.grey,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const AddLocationScreen()),
+                  );
+                },
+              ),
+              SizedBox(width: 16), // ระยะห่างระหว่างปุ่ม
+              PrimaryButton(
+                title: 'MANAGE',
+                titleColor: Colors.grey,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ManageScreen()),
+                  );
+                },
+              ),
             ],
           ),
         ),
