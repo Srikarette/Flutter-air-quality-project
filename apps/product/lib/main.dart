@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:product/features/home/screen/home_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const WeatherHomePage());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class WeatherHomePage extends StatelessWidget {
+  const WeatherHomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -15,8 +16,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const HomeScreen(title: 'Flutter Demo Home Page'),
+      home: const HomeScreen(),
     );
   }
 }
-
