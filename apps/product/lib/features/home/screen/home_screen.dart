@@ -21,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: Text(widget.title),
+          title: Text('This text come from product'),
         ),
         body: Center(
           child: Row(
