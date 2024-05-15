@@ -37,41 +37,64 @@ class _MapScreenState extends State<MapScreen> {
         for (var station in stations) {
           final List<double> geo = station['station']['geo'].cast<double>();
           final LatLng coordinates = LatLng(geo[0], geo[1]);
-          final pm25 = station['aqi'];
-
-          markers.add(
-            Marker(
-              point: coordinates,
-              width: 40,
-              height: 40,
-              child: GestureDetector(
-                onTap: () {
-                  // Show a popup or tooltip here
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text(pm25),
-                        content: Text('Popup content here'),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('Close'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-                child: Image.asset('lib/asserts/images/marker.png'),
+          final pm25 = station['aqi'] ?? '-';
+          Color _getColorForPm25(pm25){
+            int value = int.parse(pm25);
+            if (value >= 0 && value <= 50) {
+              return Colors.green;
+            } else if (value >= 51 && value <= 100) {
+              return Colors.amberAccent;
+            } else if (value >= 101 && value <= 200) {
+              return Colors.red;
+            }else {
+              return Colors.purpleAccent;
+            }
+          }
+          if (pm25 != '-') {
+            markers.add(
+              Marker(
+                point: coordinates,
+                width: 40,
+                height: 40,
+                child: GestureDetector(
+                  onTap: () {
+                    // Show a popup or tooltip here
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text(pm25),
+                          content: Text('Popup content here'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('Close'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _getColorForPm25('202'),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      pm25,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
               ),
-            ),
-          );
-
-
-
+            );
+          }
         }
         setState(() {});
       } else {
@@ -174,10 +197,4 @@ class _MapScreenState extends State<MapScreen> {
       ),
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: MapScreen(),
-  ));
 }
