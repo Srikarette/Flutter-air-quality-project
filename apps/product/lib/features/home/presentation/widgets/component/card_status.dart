@@ -151,7 +151,7 @@ class CardStatus extends StatelessWidget {
           Container(
             width: 120,
             height: 70,
-            color: const Color(0xFFEBEBEB),
+            color: Colors.grey,
             child: Align(
               alignment: Alignment.topCenter,
               child: Column(
@@ -160,7 +160,7 @@ class CardStatus extends StatelessWidget {
                   Text(
                     tomorrowDay,
                     style: const TextStyle(
-                      color: Colors.grey,
+                      color: Colors.black,
                       fontSize: 12.0,
                       fontWeight: FontWeight.bold,
                     ),
@@ -174,7 +174,7 @@ class CardStatus extends StatelessWidget {
           Container(
             width: 120,
             height: 70,
-            color: const Color(0xFFEBEBEB),
+            color: Colors.grey,
             child: Align(
               alignment: Alignment.topCenter,
               child: Column(
@@ -183,7 +183,7 @@ class CardStatus extends StatelessWidget {
                   Text(
                     dayAfterTomorrowDay,
                     style: const TextStyle(
-                      color: Colors.grey,
+                      color: Colors.black,
                       fontSize: 12.0,
                       fontWeight: FontWeight.bold,
                     ),
