@@ -1,14 +1,8 @@
-import 'package:core/dependency_injection/injector.dart';
+import 'package:core/router/router.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:product/features/home/screen/home_screen.dart';
-import 'package:product/features/home/screen/test_get_current_location_screen.dart';
-import 'package:product/features/home/screen/test_get_keyword_location_screen.dart';
 
 void main() {
-  registerServices();
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -16,14 +10,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
+      routerConfig: router,
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home:  const HomeScreen(),
     );
   }
-
 }
