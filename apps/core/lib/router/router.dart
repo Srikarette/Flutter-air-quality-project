@@ -25,5 +25,10 @@ final router = GoRouter(routes: [
           name: 'maps',
           builder: (context, state) => const MapScreen(title: 'Map Screen'),
         ),
+        GoRoute(
+          path: '/ranks',
+          name: 'ranks',
+          builder: (context, state) => const MapScreen(title: 'Rank Screen'),
+        ),
       ]),
 ]);
