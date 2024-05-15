@@ -18,7 +18,7 @@ final router = GoRouter(routes: [
         GoRoute(
           path: '/',
           name: 'home',
-          builder: (context, state) => const HomeScreen(title: 'Home Screen'),
+          builder: (context, state) => const HomeScreen(),
         ),
         GoRoute(
           path: '/maps',
