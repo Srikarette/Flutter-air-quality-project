@@ -8,6 +8,7 @@ class AddLocationScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Location'),
+        backgroundColor: const Color.fromRGBO(29, 196, 250, 1),
       ),
       body: Center(
         child: Text(

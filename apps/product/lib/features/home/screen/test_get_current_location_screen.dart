@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:product/features/home/domain/entities/weatherToDisplay.dart';
 import 'package:product/features/home/domain/port/service.dart';
 import 'package:core_libs/dependency_injection/get_it.dart';
+import 'package:product/features/home/presentation/widgets/component/app-bar.dart';
 
 class CurrentLocationApiTestScreen extends StatefulWidget {
-  const CurrentLocationApiTestScreen({Key? key}) : super(key: key);
+  const CurrentLocationApiTestScreen({super.key});
 
   @override
   State<CurrentLocationApiTestScreen> createState() => _CurrentLocationApiTestScreenState();
@@ -42,64 +43,55 @@ class _CurrentLocationApiTestScreenState extends State<CurrentLocationApiTestScr
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Weather App'),
-        backgroundColor: Colors.blue, // Set your preferred color
-      ),
+      appBar: CustomAppBar(),
       body: Center(
         child: _isLoading
-            ? CircularProgressIndicator()
+            ? const CircularProgressIndicator()
             : _hasError
-            ? Text(
-          'Failed to fetch weather data',
-          style: TextStyle(color: Colors.red), // Set your preferred error text color
-        )
+            ? const Text('Failed to fetch weather data')
             : Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const SizedBox(height: 20),
             Text(
               'City: ${_currentWeather?.cityName ?? 'Unknown'}',
-              style: TextStyle(fontSize: 24),
+              style: const TextStyle(fontSize: 24),
             ),
             const SizedBox(height: 10),
             Text(
               'Update Time: ${_currentWeather?.updateTime ?? 'Unknown'}',
-              style: TextStyle(fontSize: 18),
+              style: const TextStyle(fontSize: 18),
             ),
             const SizedBox(height: 10),
+            const Text(
+              'PM2.5 Forecast:',
+              style: TextStyle(fontSize: 18),
+            ),
             const SizedBox(height: 10),
             Expanded(
               child: ListView.builder(
                 itemCount: _currentWeather?.pm25Forecast.length ?? 0,
                 itemBuilder: (context, index) {
                   final dailyForecast = _currentWeather!.pm25Forecast[index];
-                  return Card(
-                    elevation: 4, // Set your preferred elevation
-                    margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Set your preferred margin
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Date: ${dailyForecast.day}',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'Avg: ${dailyForecast.avg}',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          Text(
-                            'Max: ${dailyForecast.max}',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          Text(
-                            'Min: ${dailyForecast.min}',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ],
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
+                    child: Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Date: ${dailyForecast.day}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 8),
+                            Text('Avg: ${dailyForecast.avg}', style: const TextStyle(fontSize: 14)),
+                            Text('Max: ${dailyForecast.max}', style: const TextStyle(fontSize: 14)),
+                            Text('Min: ${dailyForecast.min}', style: const TextStyle(fontSize: 14)),
+                          ],
+                        ),
                       ),
                     ),
                   );
