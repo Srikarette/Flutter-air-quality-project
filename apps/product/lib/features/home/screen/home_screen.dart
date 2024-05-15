@@ -1,5 +1,6 @@
 import 'package:core_ui/widgets/elements/botton/primary_button.dart';
 import 'package:flutter/material.dart';
+import 'package:product/features/home/presentation/widgets/component/app-bar.dart';
 import 'package:product/features/home/screen/add_location_screen.dart';
 import 'package:product/features/home/screen/manage_location_screen.dart';
 
@@ -20,8 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
         primaryColor: Colors.black, 
       ),
       home: Scaffold(
-        appBar: AppBar(
-          title: Text('This text come from product'),
+        appBar: CustomAppBar(
         ),
         body: Center(
           child: Row(
