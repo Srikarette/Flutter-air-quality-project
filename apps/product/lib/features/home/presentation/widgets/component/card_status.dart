@@ -1,18 +1,30 @@
 import 'package:flutter/material.dart';
 
 class CardStatus extends StatelessWidget {
-  final int value;
-  final int value1;
-  final int value2;
+  final num dailyAvg;
+  final num tomorrowAvg;
+  final num dayAfterTomorrowAvg;
+  final String city;
+  final String updateTime;
+  final String tomorrowDay;
+  final String dayAfterTomorrowDay;
 
-    const CardStatus({super.key, required this.value, required this.value1, required this.value2,});
+  const CardStatus({
+    super.key,
+    required this.dailyAvg,
+    required this.tomorrowAvg,
+    required this.dayAfterTomorrowAvg,
+    required this.city,
+    required this.updateTime,
+    required this.tomorrowDay,
+    required this.dayAfterTomorrowDay,
+  });
 
-
-  Color _getColor(int value) {
+  Color _getColor(num value) {
     if (value >= 0 && value <= 50) {
       return Colors.green;
     } else if (value >= 51 && value <= 100) {
-      return Colors.yellow;
+      return Colors.amber;
     } else if (value >= 101 && value <= 200) {
       return Colors.red;
     } else {
@@ -21,31 +33,31 @@ class CardStatus extends StatelessWidget {
   }
 
   Widget _getIcon() {
-    double iconSize = 50.0;
-    if (value >= 0 && value <= 50) {
-      return Icon(
+    const double iconSize = 50.0;
+    if (dailyAvg >= 0 && dailyAvg <= 50) {
+      return const Icon(
         Icons.sentiment_satisfied_alt_outlined,
         size: iconSize,
       );
-    } else if (value >= 51 && value <= 100) {
-      return Icon(
+    } else if (dailyAvg >= 51 && dailyAvg <= 100) {
+      return const Icon(
         Icons.sentiment_neutral_outlined,
         size: iconSize,
       );
-    } else if (value >= 101 && value <= 200) {
-      return Icon(
+    } else if (dailyAvg >= 101 && dailyAvg <= 200) {
+      return const Icon(
         Icons.sentiment_dissatisfied_outlined,
         size: iconSize,
       );
     } else {
-      return Icon(
+      return const Icon(
         Icons.sick_outlined,
         size: iconSize,
       );
     }
   }
 
-   Widget _buildValueContainer(int value) {
+  Widget _buildValueContainer(num value) {
     Color color = _getColor(value);
     return Column(
       children: [
@@ -55,7 +67,7 @@ class CardStatus extends StatelessWidget {
           color: color,
           child: Center(
             child: Text(
-             '$value',
+              '$value',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 16.0,
@@ -70,7 +82,7 @@ class CardStatus extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color mainColor = _getColor(value);
+    Color mainColor = _getColor(dailyAvg);
 
     return SizedBox(
       width: 350,
@@ -89,7 +101,7 @@ class CardStatus extends StatelessWidget {
                     _getIcon(),
                     SizedBox(height: 1),
                     Text(
-                      '$value',
+                      '$dailyAvg',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 28.0,
@@ -109,99 +121,98 @@ class CardStatus extends StatelessWidget {
                 ),
               ),
             ),
-            Column(
-              children: [
-                Container(
-                  width: 240,
-                  height: 52,
-                  decoration: const BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(10.0),
-                    ),
-                  ),
-                  child: const Text(
-                    'SUB DISTRICT NAME 1 CITY, COUNTRY',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16.0,
-                    ),
-                  ),
-                ),
-                Row(
-                  children: [
-                    Container(
-                      width: 120,
-                      height: 70,
-                      color: Colors.white,
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child: Column(
-                          children: [
-                            Text(
-                              'Day',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                             _buildValueContainer(value1),
-                    
-                          ],
-                        ),
-                        
-                      ),
-                    ),
-                    Container(
-                      width: 120,
-                      height: 70,
-                      color: Colors.blueAccent,
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child: Column(
-                          children: [
-                            Text(
-                              'Day',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                             _buildValueContainer(value2),
-                          ],
-                        ), 
-                        
-                        
-                        
-                      ),
-                    ),
-                  ],
-                ),
-                Container(
-                  width: 240,
-                  height: 20,
-                  decoration: const BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.only(
-                      bottomRight: Radius.circular(10.0),
-                    ),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'Time',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12.0,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            Container(
+  decoration: BoxDecoration(
+    color: Colors.black, 
+    borderRadius: BorderRadius.circular(10), 
+    border: Border.all(
+      color: Colors.black,
+      width: 2, 
+    ),
+  ),
+  child: Column(
+    children: [
+      Container(
+        width: 240,
+        height: 52,
+        child: Center(
+          child: Text(
+            city,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 26.0,
             ),
+          ),
+        ),
+      ),
+      Row(
+        children: [
+          Container(
+            width: 120,
+            height: 70,
+            color: const Color(0xFFEBEBEB),
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    tomorrowDay,
+                    style: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  _buildValueContainer(tomorrowAvg),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(width: 1),
+          Container(
+            width: 120,
+            height: 70,
+            color: const Color(0xFFEBEBEB),
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    dayAfterTomorrowDay,
+                    style: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  _buildValueContainer(dayAfterTomorrowAvg),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+      Container(
+        width: 240,
+        height: 15,
+        child: Center(
+          child: Text(
+            updateTime,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 12.0,
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+),
+
           ],
         ),
       ),
