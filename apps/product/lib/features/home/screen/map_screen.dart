@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:http/http.dart' as http;
@@ -12,30 +13,83 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  List<LatLng> polylinePoints = []; // Store your polyline points here
-  String lastUpdate = ''; // Store the last update date here
+  List<Marker> markers = [];
+  String lastUpdate = '';
+  double initialZoom = 0;
+  LatLng? centerLocation = LatLng(18.787747, 98.9931284);
 
   @override
   void initState() {
     super.initState();
-    fetchAndCreatePolyline();
+    fetchTimeAt();
+    fetchMarker();
+    initialZoom;
   }
 
-  Future<void> fetchAndCreatePolyline() async {
+  Future<void> fetchMarker() async {
     const apiUrl =
-        'https://api.waqi.info/feed/chiangmai/?token=2190be2f9c41f96905ba4fc092a664c0ad2d87b4'; // Replace with the actual API URL
-
+        'https://api.waqi.info/search/?token=2190be2f9c41f96905ba4fc092a664c0ad2d87b4&keyword=chiangmai';
     try {
       final response = await http.get(Uri.parse(apiUrl));
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        // Extract latitude and longitude points
+        final List<dynamic> stations = data['data'];
+        for (var station in stations) {
+          final List<double> geo = station['station']['geo'].cast<double>();
+          final LatLng coordinates = LatLng(geo[0], geo[1]);
+          final pm25 = station['aqi'];
 
-        final List<double> geo = data['data']['city']['geo'].cast<double>();
-        final LatLng coordinates = LatLng(geo[0], geo[1]);
-        print(coordinates);
+          markers.add(
+            Marker(
+              point: coordinates,
+              width: 40,
+              height: 40,
+              child: GestureDetector(
+                onTap: () {
+                  // Show a popup or tooltip here
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text(pm25),
+                        content: Text('Popup content here'),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Close'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                child: Image.asset('lib/asserts/images/marker.png'),
+              ),
+            ),
+          );
+
+
+
+        }
+        setState(() {});
+      } else {
+        print('API request failed with status ${response.statusCode}');
+      }
+    } catch (e) {
+      print("Error $e");
+    }
+  }
+
+  Future<void> fetchTimeAt() async {
+    const apiUrl =
+        'https://api.waqi.info/feed/here/?token=2190be2f9c41f96905ba4fc092a664c0ad2d87b4';
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
         setState(() {
-          polylinePoints.add(coordinates);
           lastUpdate = data['data']['time']['s'].split(" ")[1];
         });
       } else {
@@ -49,63 +103,81 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
+      body: centerLocation == null
+          ? const Center(
+        child: CircularProgressIndicator(),
+      )
+          : Stack(
         children: [
           FlutterMap(
             options: MapOptions(
-              initialCenter: LatLng(18.787747, 98.9931284),
-              initialZoom: 9,
+              initialCenter: centerLocation!,
+              initialZoom: 14,
             ),
             children: [
               TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                urlTemplate:
+                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                 userAgentPackageName: 'com.example.app',
               ),
-              PolylineLayer(
-                polylines: [
-                  Polyline(
-                    points:
-                        polylinePoints, // Use the fetched polyline points here
-                    color: Colors.blue,
-                  ),
-                ],
-              ),
+              MarkerLayer(markers: markers)
             ],
           ),
           Positioned(
-              top: 16.0,
-              right: 40.0,
-              child: SafeArea(
-                child: Container(
-                  padding: EdgeInsets.all(8.0),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: Text(
-                    'Data at $lastUpdate',
-                    style: TextStyle(
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.bold,
-                    ),
+            top: 16.0,
+            right: 40.0,
+            child: SafeArea(
+              child: Container(
+                padding: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                child: Text(
+                  'Data at $lastUpdate',
+                  style: const TextStyle(
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              )),
+              ),
+            ),
+          ),
           Positioned(
             top: 16.0,
             left: 40.0,
             child: SafeArea(
-                child: Container(
-              padding: EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8.0),
+              child: Container(
+                padding: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.add_road_rounded),
+                    SizedBox(width: 8.0),
+                    Text(
+                      'Select city  ',
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Icon(Icons.arrow_drop_down)
+                  ],
+                ),
               ),
-              child: Icon(Icons.add_road_rounded),
-            )),
+            ),
           )
         ],
       ),
     );
   }
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: MapScreen(),
+  ));
 }
