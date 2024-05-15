@@ -1,5 +1,4 @@
 import 'package:core_libs/dependency_injection/get_it.dart';
-import 'package:product/features/home/data/models/weather.dart';
 import 'package:product/features/home/domain/entities/weatherToDisplay.dart';
 import 'package:product/features/home/domain/entities/weatherToDisplayByCity.dart';
 import 'package:product/features/home/domain/port/repository.dart';

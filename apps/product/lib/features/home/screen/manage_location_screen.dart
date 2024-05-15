@@ -8,6 +8,7 @@ class ManageScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Manage'),
+        backgroundColor: const Color.fromRGBO(29, 196, 250, 1),
       ),
       body: Center(
         child: Text(

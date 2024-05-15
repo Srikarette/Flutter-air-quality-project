@@ -1,6 +1,5 @@
 import 'package:core_libs/dependency_injection/get_it.dart';
 import 'package:flutter/material.dart';
-import 'package:product/features/home/screen/home_screen.dart';
 import 'package:product/infrasturcture/dependency_injection/injector.dart';
 
 void main() {
