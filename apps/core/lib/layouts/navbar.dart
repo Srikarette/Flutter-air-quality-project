@@ -62,8 +62,8 @@ class _BottomNavigationState extends State<BottomNavigation> {
                   icon: Icon(Icons.home_outlined), label: 'หน้าหลัก'),
               BottomNavigationBarItem(
                   icon: Icon(Icons.map_outlined), label: 'แผนที่'),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.emoji_events_outlined), label: 'อันดับ'),
+              // BottomNavigationBarItem(
+              //     icon: Icon(Icons.emoji_events_outlined), label: 'อันดับ'),
             ],
           ),
         ),
