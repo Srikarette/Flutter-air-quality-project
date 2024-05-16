@@ -1,7 +1,9 @@
 import 'package:core_ui/widgets/elements/botton/primary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:product/features/home/presentation/widgets/component/app-bar.dart';
+import 'package:product/features/home/presentation/widgets/component/location_list.dart';
 import 'package:product/features/home/screen/add_location_screen.dart';
+import 'package:product/features/home/screen/favotire_list_screen.dart';
 import 'package:product/features/home/screen/manage_location_screen.dart';
 
 
@@ -33,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const AddLocationScreen()),
+                    MaterialPageRoute(builder: (context) =>  LocationList()),
                   );
                 },
               ),
@@ -44,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const ManageScreen()),
+                    MaterialPageRoute(builder: (context) => FavoriteList()),
                   );
                 },
               ),
