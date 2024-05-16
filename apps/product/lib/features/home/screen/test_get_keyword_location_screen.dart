@@ -1,4 +1,6 @@
+import 'package:core_ui/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:product/features/home/domain/entities/weatherToDisplayByCity.dart';
 import 'package:product/features/home/domain/port/service.dart';
 import 'package:core_libs/dependency_injection/get_it.dart';
@@ -83,7 +85,11 @@ class _KeyWordLocationTestScreenState extends State<KeyWordLocationTestScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return Consumer(
+      builder: (context, ref, child) {
+    final color = ref.watch(appThemeProvider).themeColor;
     return Scaffold(
+       backgroundColor: color.backgroundPrimary,
       appBar: CustomAppBar(
         searchController: _searchController,
         onSearchSubmitted: _searchWeatherByCity,
@@ -92,7 +98,14 @@ class _KeyWordLocationTestScreenState extends State<KeyWordLocationTestScreen> {
         child: _isLoading
             ? CircularProgressIndicator()
             : _hasError
-            ? const Text('NO DATA FOUND')
+                ? const Text(
+                    'NO DATA FOUND',
+                    style: TextStyle(
+                      color: Colors.grey, 
+                      fontSize: 18.0, 
+                      fontWeight: FontWeight.bold, 
+                    ),
+                  )
             : SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -116,6 +129,8 @@ class _KeyWordLocationTestScreenState extends State<KeyWordLocationTestScreen> {
           ),
         ),
       ),
+    );
+    },
     );
   }
 }
