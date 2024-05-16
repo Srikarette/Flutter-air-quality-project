@@ -2,6 +2,8 @@ import 'package:core_libs/dependency_injection/get_it.dart';
 import 'package:core_ui/theme/theme_provider.dart';
 import 'package:core_ui/widgets/elements/botton/primary_button.dart';
 import 'package:flutter/material.dart';
+import 'package:product/features/home/presentation/widgets/component/app-bar.dart';
+import 'package:product/features/home/presentation/widgets/component/location_list.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:product/features/home/domain/entities/weatherToDisplay.dart';
@@ -11,6 +13,7 @@ import 'package:core_ui/widgets/composes/navbar/app-bar.dart';
 import 'package:product/features/home/presentation/widgets/component/card_status.dart';
 import 'package:product/features/home/presentation/widgets/component/card_status_search_result.dart';
 import 'package:product/features/home/screen/add_location_screen.dart';
+import 'package:product/features/home/screen/favotire_list_screen.dart';
 import 'package:product/features/home/screen/manage_location_screen.dart';
 
 String formatDateTime(String dateTimeString) {
