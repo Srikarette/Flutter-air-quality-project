@@ -1,6 +1,9 @@
+import 'package:core_ui/theme/color/theme_color.dart';
+import 'package:core_ui/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CardStatus extends StatelessWidget {
+class CardStatus extends ConsumerWidget {
   final num dailyAvg;
   final num tomorrowAvg;
   final num dayAfterTomorrowAvg;
@@ -57,7 +60,7 @@ class CardStatus extends StatelessWidget {
     }
   }
 
-  Widget _buildValueContainer(num value) {
+  Widget _buildValueContainer(num value ,IThemeColor theme) {
     Color color = _getColor(value);
     return Column(
       children: [
@@ -69,7 +72,7 @@ class CardStatus extends StatelessWidget {
             child: Text(
               '$value',
               style: TextStyle(
-                color: Colors.white,
+                color: theme.text,
                 fontSize: 16.0,
                 fontWeight: FontWeight.bold,
               ),
@@ -81,7 +84,8 @@ class CardStatus extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(appThemeProvider).themeColor;
     Color mainColor = _getColor(dailyAvg);
 
     return SizedBox(
@@ -102,17 +106,17 @@ class CardStatus extends StatelessWidget {
                     SizedBox(height: 1),
                     Text(
                       '$dailyAvg',
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: theme.text,
                         fontSize: 28.0,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     SizedBox(height: 1),
-                    const Text(
+                     Text(
                       'US AQI',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: theme.text,
                         fontSize: 12.0,
                         fontWeight: FontWeight.bold,
                       ),
@@ -123,35 +127,35 @@ class CardStatus extends StatelessWidget {
             ),
             Container(
   decoration: BoxDecoration(
-    color: Colors.black, 
+    color: theme.backgroundSecondary, 
     borderRadius: BorderRadius.circular(10), 
     border: Border.all(
-      color: Colors.black,
+      color: theme.backgroundSecondary,
       width: 2, 
     ),
   ),
   child: Column(
-    children: [
-      Container(
-        width: 240,
-        height: 52,
-        child: Center(
-          child: Text(
-            city,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 26.0,
-            ),
-          ),
-        ),
-      ),
+                children: [
+                  Container(
+                    width: 240,
+                    height: 52,
+                    child: Center(
+                      child: Text(
+                        city,
+                        style: TextStyle(
+                          color: theme.text,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 26.0,
+                        ),
+                      ),
+                    ),
+                  ),
       Row(
         children: [
           Container(
             width: 120,
             height: 70,
-            color: const Color(0xFFEBEBEB),
+            color: Colors.grey,
             child: Align(
               alignment: Alignment.topCenter,
               child: Column(
@@ -159,13 +163,13 @@ class CardStatus extends StatelessWidget {
                 children: [
                   Text(
                     tomorrowDay,
-                    style: const TextStyle(
-                      color: Colors.grey,
+                    style: TextStyle(
+                      color: theme.text,
                       fontSize: 12.0,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  _buildValueContainer(tomorrowAvg),
+                  _buildValueContainer(tomorrowAvg,theme),
                 ],
               ),
             ),
@@ -174,7 +178,7 @@ class CardStatus extends StatelessWidget {
           Container(
             width: 120,
             height: 70,
-            color: const Color(0xFFEBEBEB),
+            color: Colors.grey,
             child: Align(
               alignment: Alignment.topCenter,
               child: Column(
@@ -182,13 +186,13 @@ class CardStatus extends StatelessWidget {
                 children: [
                   Text(
                     dayAfterTomorrowDay,
-                    style: const TextStyle(
-                      color: Colors.grey,
+                    style: TextStyle(
+                      color: theme.text,
                       fontSize: 12.0,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  _buildValueContainer(dayAfterTomorrowAvg),
+                  _buildValueContainer(dayAfterTomorrowAvg,theme),
                 ],
               ),
             ),
@@ -200,12 +204,12 @@ class CardStatus extends StatelessWidget {
         height: 15,
         child: Center(
           child: Text(
-            updateTime,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 12.0,
-            ),
+            'Today:$updateTime',
+            style: TextStyle(
+                          color: theme.text,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12.0,
+                        ),
           ),
         ),
       ),
