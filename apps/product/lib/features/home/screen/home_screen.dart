@@ -3,7 +3,7 @@ import 'package:core_ui/widgets/elements/botton/primary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:product/features/home/domain/entities/weatherToDisplay.dart';
 import 'package:product/features/home/domain/port/service.dart';
-import 'package:product/features/home/presentation/widgets/component/app-bar.dart';
+import 'package:core_ui/widgets/composes/navbar/app-bar.dart';
 import 'package:product/features/home/presentation/widgets/component/card_status.dart';
 import 'package:product/features/home/screen/add_location_screen.dart';
 import 'package:product/features/home/screen/manage_location_screen.dart';
@@ -82,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   },
                 ),
-                SizedBox(width: 16), // ระยะห่างระหว่างปุ่ม
+                SizedBox(width: 16),
                 PrimaryButton(
                   title: 'MANAGE',
                   titleColor: Colors.grey,

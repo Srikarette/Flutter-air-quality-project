@@ -22,7 +22,6 @@ class WeatherRepository implements WeatherDataProjection {
   @override
   Future<AirQualityDataByCity> getWeatherDataByCity(String city) async {
     final response = await httpService.get('/search/?token=$token&keyword=$city');
-    print(response);
     return AirQualityDataByCity.fromJson(response);
   }
 }

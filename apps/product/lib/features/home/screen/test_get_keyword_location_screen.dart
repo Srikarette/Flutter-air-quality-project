@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:product/features/home/domain/entities/weatherToDisplayByCity.dart';
 import 'package:product/features/home/domain/port/service.dart';
 import 'package:core_libs/dependency_injection/get_it.dart';
-import 'package:product/features/home/presentation/widgets/component/app-bar.dart';
+import 'package:core_ui/widgets/composes/navbar/app-bar.dart';
+import 'package:product/features/home/presentation/widgets/component/card_status_search_result.dart';
 
 class KeyWordLocationTestScreen extends StatefulWidget {
-  const KeyWordLocationTestScreen({Key? key}) : super(key: key);
+  const KeyWordLocationTestScreen({super.key});
 
   @override
   State<KeyWordLocationTestScreen> createState() => _KeyWordLocationTestScreenState();
@@ -18,7 +19,7 @@ class _KeyWordLocationTestScreenState extends State<KeyWordLocationTestScreen> {
   WeatherToDisplayByCity? _currentWeather;
   bool _isLoading = true;
   bool _hasError = false;
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -91,7 +92,7 @@ class _KeyWordLocationTestScreenState extends State<KeyWordLocationTestScreen> {
         child: _isLoading
             ? CircularProgressIndicator()
             : _hasError
-            ? Text('NO DATA FOUND')
+            ? const Text('NO DATA FOUND')
             : SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -100,37 +101,16 @@ class _KeyWordLocationTestScreenState extends State<KeyWordLocationTestScreen> {
               children: <Widget>[
                 // Display station data for each weather data
                 if (_currentWeather?.weatherDataList != null)
-                  ..._currentWeather!.weatherDataList!.map((weatherData) => Card(
-                    elevation: 4,
-                    margin: EdgeInsets.symmetric(vertical: 10),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Station Name: ${weatherData.station?.name ?? 'Unknown'}',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'AQI: ${weatherData.aqi ?? 'Unknown'}',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'Time: ${weatherData.time?.stime ?? 'Unknown'}',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'Country: ${weatherData.station?.country ?? 'Unknown'}',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ],
+                  ..._currentWeather!.weatherDataList!.map((weatherData) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CardSearchStatus(
+                        dailyAvg: weatherData.aqi ?? 'Unknown',
+                        city: weatherData.station?.name ?? 'Unknown',
+                        updateTime: weatherData.time?.stime ?? 'Unknown',
                       ),
-                    ),
-                  )),
+                    ],
+                                      )),
               ],
             ),
           ),

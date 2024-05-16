@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:product/features/home/domain/entities/weatherToDisplay.dart';
 import 'package:product/features/home/domain/port/service.dart';
 import 'package:core_libs/dependency_injection/get_it.dart';
-import 'package:product/features/home/presentation/widgets/component/app-bar.dart';
+import 'package:core_ui/widgets/composes/navbar/app-bar.dart';
 
 class CurrentLocationApiTestScreen extends StatefulWidget {
   const CurrentLocationApiTestScreen({super.key});
