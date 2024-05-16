@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:product/features/home/domain/entities/weatherToDisplay.dart';
 import 'package:product/features/home/domain/port/service.dart';
+import 'package:product/features/home/presentation/widgets/component/app-bar.dart';
 import 'package:product/features/home/presentation/widgets/component/card_status.dart';
 import 'package:product/features/home/screen/add_location_screen.dart';
 import 'package:product/features/home/screen/manage_location_screen.dart';
@@ -85,7 +86,7 @@ if (dayAfterTomorrowForecast != null && dayAfterTomorrowForecast.day != null) {
     return MaterialApp(
       home: Scaffold(
         backgroundColor: Colors.white70,
-        appBar: AppBar(),
+        appBar: CustomAppBar(),
         body: Column(
           children: <Widget>[
             SizedBox(height: 16),
