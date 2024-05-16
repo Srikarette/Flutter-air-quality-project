@@ -59,7 +59,6 @@ class _HomeScreenState extends State<HomeScreen> {
         _isLoading = false;
         _hasError = false;
       });
-      // Trigger search with default city name
       if (_currentWeather?.cityName != null) {
         _fetchSearchWeather(_currentWeather!.cityName!);
       } else {
@@ -186,19 +185,29 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 16),
                   if (_currentSearchWeather?.weatherDataList != null)
-                    SizedBox(
-                      height: 300, // Adjust the height as needed
-                      child: SingleChildScrollView(
+                    Expanded(
                         child: Column(
-                          children: _currentSearchWeather!.weatherDataList!.map((weatherData) {
-                            return CardSearchStatus(
-                              dailyAvg: weatherData.aqi ?? 'Unknown',
-                              city: weatherData.station?.name ?? 'Unknown',
-                              updateTime: weatherData.time?.stime ?? 'Unknown',
-                            );
-                          }).toList(),
+                          children: [
+                            Expanded(
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  children: _currentSearchWeather!.weatherDataList!.map((weatherData) {
+                                    return CardSearchStatus(
+                                      dailyAvg: weatherData.aqi ?? 'Unknown',
+                                      city: weatherData.station?.name ?? 'Unknown',
+                                      updateTime: weatherData.time?.stime ?? 'Unknown',
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            ),
+                            const Icon(Icons.arrow_downward, color: Colors.grey),
+                            const Text(
+                              'Scroll down for more',
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ],
                         ),
-                      ),
                     ),
                 ],
               ),
