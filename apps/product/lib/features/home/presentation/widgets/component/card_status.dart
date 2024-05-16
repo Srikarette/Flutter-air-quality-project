@@ -64,7 +64,7 @@ class CardStatus extends ConsumerWidget {
     Color color = _getColor(value);
     return Column(
       children: [
-        Container(
+         Container(
           width: 120,
           height: 53,
           color: color,
@@ -79,6 +79,7 @@ class CardStatus extends ConsumerWidget {
             ),
           ),
         ),
+        
       ],
     );
   }
@@ -152,6 +153,9 @@ class CardStatus extends ConsumerWidget {
                   ),
       Row(
         children: [
+          ClipRRect(
+        borderRadius: BorderRadius.circular(10.0),
+         child:
           Container(
             width: 120,
             height: 70,
@@ -173,9 +177,12 @@ class CardStatus extends ConsumerWidget {
                 ],
               ),
             ),
+            ),
           ),
           SizedBox(width: 1),
-          Container(
+          ClipRRect(
+        borderRadius: BorderRadius.circular(10.0),
+         child:Container(
             width: 120,
             height: 70,
             color: Colors.grey,
@@ -196,6 +203,7 @@ class CardStatus extends ConsumerWidget {
                 ],
               ),
             ),
+          ),
           ),
         ],
       ),
