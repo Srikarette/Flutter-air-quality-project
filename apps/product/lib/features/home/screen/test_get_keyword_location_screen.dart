@@ -96,7 +96,7 @@ class _KeyWordLocationTestScreenState extends State<KeyWordLocationTestScreen> {
       ),
       body: Center(
         child: _isLoading
-            ? CircularProgressIndicator()
+            ? const CircularProgressIndicator()
             : _hasError
                 ? const Text(
                     'NO DATA FOUND',
@@ -111,20 +111,7 @@ class _KeyWordLocationTestScreenState extends State<KeyWordLocationTestScreen> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                // Display station data for each weather data
-                if (_currentWeather?.weatherDataList != null)
-                  ..._currentWeather!.weatherDataList!.map((weatherData) => Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CardSearchStatus(
-                        dailyAvg: weatherData.aqi ?? 'Unknown',
-                        city: weatherData.station?.name ?? 'Unknown',
-                        updateTime: weatherData.time?.stime ?? 'Unknown',
-                      ),
-                    ],
-                                      )),
-              ],
+
             ),
           ),
         ),

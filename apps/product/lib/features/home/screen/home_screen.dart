@@ -5,12 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:product/features/home/domain/entities/weatherToDisplay.dart';
+import 'package:product/features/home/domain/entities/weatherToDisplayByCity.dart';
 import 'package:product/features/home/domain/port/service.dart';
 import 'package:core_ui/widgets/composes/navbar/app-bar.dart';
 import 'package:product/features/home/presentation/widgets/component/card_status.dart';
+import 'package:product/features/home/presentation/widgets/component/card_status_search_result.dart';
 import 'package:product/features/home/screen/add_location_screen.dart';
 import 'package:product/features/home/screen/manage_location_screen.dart';
-
 
 String formatDateTime(String dateTimeString) {
   DateTime dateTime = DateTime.parse(dateTimeString);
@@ -24,9 +25,8 @@ String formatDateDay(String dateTimeString) {
   return dateFormat.format(dateTime);
 }
 
-
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key,});
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -34,7 +34,12 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late WeatherProjectionService _weatherService;
+  late WeatherProjectionService _weatherSearchService;
   WeatherToDisplay? _currentWeather;
+  WeatherToDisplayByCity? _currentSearchWeather;
+
+  final dayCounter = 365;
+  final TextEditingController _searchController = TextEditingController();
   bool _isLoading = true;
   bool _hasError = false;
 
@@ -42,6 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _weatherService = getIt.get<WeatherProjectionService>();
+    _weatherSearchService = getIt.get<WeatherProjectionService>();
     _fetchCurrentWeather();
   }
 
@@ -53,6 +59,38 @@ class _HomeScreenState extends State<HomeScreen> {
         _isLoading = false;
         _hasError = false;
       });
+      // Trigger search with default city name
+      if (_currentWeather?.cityName != null) {
+        _fetchSearchWeather(_currentWeather!.cityName!);
+      } else {
+        _fetchSearchWeather('');
+      }
+    } catch (error) {
+      setState(() {
+        _hasError = true;
+        _isLoading = false;
+      });
+      _fetchSearchWeather('');
+    }
+  }
+
+  Future<void> _fetchSearchWeather(String city) async {
+    try {
+      final weatherData = await _weatherSearchService.getWeatherDataByCity(city);
+      final filteredData = WeatherToDisplayByCity(
+        weatherDataList: weatherData.weatherDataList?.where((data) {
+          final dateTime = DateTime.parse(data.time?.stime ?? '');
+          final now = DateTime.now();
+          final isWithinPastYear = dateTime.isAfter(now.subtract(Duration(days: dayCounter)));
+          final hasAqiData = data.aqi != "-";
+          return isWithinPastYear && hasAqiData;
+        }).toList() ?? [],
+      );
+      setState(() {
+        _currentSearchWeather = filteredData;
+        _isLoading = false;
+        _hasError = false;
+      });
     } catch (error) {
       setState(() {
         _hasError = true;
@@ -61,7 +99,15 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
- @override
+  Future<void> _searchWeatherByCity(String city) async {
+    setState(() {
+      _isLoading = true;
+      _hasError = false;
+    });
+    await _fetchSearchWeather(city);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
@@ -88,52 +134,74 @@ class _HomeScreenState extends State<HomeScreen> {
         return MaterialApp(
           home: Scaffold(
             backgroundColor: color.backgroundPrimary,
-            appBar: CustomAppBar(),
-            body: Column(
-              children: <Widget>[
-                SizedBox(height: 16),
-                if (dailyForecast != null && tomorrowForecast != null && dayAfterTomorrowForecast != null)
-                  CardStatus(
-                    dailyAvg: dailyForecast.avg ?? 0,
-                    tomorrowAvg: tomorrowForecast.avg ?? 0,
-                    dayAfterTomorrowAvg: dayAfterTomorrowForecast.avg ?? 0,
-                    city: _currentWeather?.cityName ?? 'Unknown',
-                    updateTime: updateTime,
-                    tomorrowDay: tomorrowDay,
-                    dayAfterTomorrowDay: dayAfterTomorrowDay,
+            appBar: CustomAppBar(
+              searchController: _searchController,
+              onSearchSubmitted: _searchWeatherByCity,
+            ),
+            body: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: <Widget>[
+                  const SizedBox(height: 16),
+                  if (dailyForecast != null && tomorrowForecast != null && dayAfterTomorrowForecast != null)
+                    CardStatus(
+                      dailyAvg: dailyForecast.avg ?? 0,
+                      tomorrowAvg: tomorrowForecast.avg ?? 0,
+                      dayAfterTomorrowAvg: dayAfterTomorrowForecast.avg ?? 0,
+                      city: _currentWeather?.cityName ?? 'Unknown',
+                      updateTime: updateTime,
+                      tomorrowDay: tomorrowDay,
+                      dayAfterTomorrowDay: dayAfterTomorrowDay,
+                    ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      PrimaryButton(
+                        title: 'ADD LOCATION',
+                        titleColor: Colors.grey,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const AddLocationScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(width: 16),
+                      PrimaryButton(
+                        title: 'MANAGE',
+                        titleColor: Colors.grey,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ManageScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
-                SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    PrimaryButton(
-                      title: 'ADD LOCATION',
-                      titleColor: Colors.grey,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const AddLocationScreen(),
-                          ),
-                        );
-                      },
+                  const SizedBox(height: 16),
+                  if (_currentSearchWeather?.weatherDataList != null)
+                    SizedBox(
+                      height: 300, // Adjust the height as needed
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: _currentSearchWeather!.weatherDataList!.map((weatherData) {
+                            return CardSearchStatus(
+                              dailyAvg: weatherData.aqi ?? 'Unknown',
+                              city: weatherData.station?.name ?? 'Unknown',
+                              updateTime: weatherData.time?.stime ?? 'Unknown',
+                            );
+                          }).toList(),
+                        ),
+                      ),
                     ),
-                    SizedBox(width: 16), // ระยะห่างระหว่างปุ่ม
-                    PrimaryButton(
-                      title: 'MANAGE',
-                      titleColor: Colors.grey,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const ManageScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
