@@ -2,8 +2,10 @@
 import 'dart:ffi';
 
 import 'package:core_libs/dependency_injection/get_it.dart';
+import 'package:core_ui/theme/theme_provider.dart';
 import 'package:core_ui/widgets/elements/botton/primary_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:product/features/home/domain/entities/weatherToDisplay.dart';
 import 'package:product/features/home/domain/port/service.dart';
@@ -62,76 +64,83 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  @override
+ @override
   Widget build(BuildContext context) {
-     final dailyForecast = _currentWeather?.pm25Forecast[2];
-     final tomorrowForecast = _currentWeather?.pm25Forecast[3];
-     final dayAfterTomorrowForecast = _currentWeather?.pm25Forecast[4];
+    return Consumer(
+      builder: (context, ref, child) {
+        final color = ref.watch(appThemeProvider).themeColor;
+        final dailyForecast = _currentWeather?.pm25Forecast[2];
+        final tomorrowForecast = _currentWeather?.pm25Forecast[3];
+        final dayAfterTomorrowForecast = _currentWeather?.pm25Forecast[4];
 
-     String updateTime = 'Unknown';
-  if (_currentWeather?.updateTime != null) {
-    updateTime = formatDateTime(_currentWeather!.updateTime);
-  }
+        String updateTime = 'Unknown';
+        if (_currentWeather?.updateTime != null) {
+          updateTime = formatDateTime(_currentWeather!.updateTime);
+        }
 
-  String tomorrowDay = 'Unknown';
-if (tomorrowForecast != null && tomorrowForecast.day != null) {
-  tomorrowDay = formatDateDay(tomorrowForecast.day!);
-}
+        String tomorrowDay = 'Unknown';
+        if (tomorrowForecast != null && tomorrowForecast.day != null) {
+          tomorrowDay = formatDateDay(tomorrowForecast.day!);
+        }
 
-String dayAfterTomorrowDay = 'Unknown';
-if (dayAfterTomorrowForecast != null && dayAfterTomorrowForecast.day != null) {
-  dayAfterTomorrowDay = formatDateDay(dayAfterTomorrowForecast.day!);
-}
+        String dayAfterTomorrowDay = 'Unknown';
+        if (dayAfterTomorrowForecast != null && dayAfterTomorrowForecast.day != null) {
+          dayAfterTomorrowDay = formatDateDay(dayAfterTomorrowForecast.day!);
+        }
 
-    return MaterialApp(
-      home: Scaffold(
-        backgroundColor: Colors.white70,
-        appBar: CustomAppBar(),
-        body: Column(
-          children: <Widget>[
-            SizedBox(height: 16),
-              if (dailyForecast != null && tomorrowForecast != null && dayAfterTomorrowForecast != null)
-            CardStatus(
-              dailyAvg: dailyForecast.avg ?? 0,
-              tomorrowAvg: tomorrowForecast.avg ?? 0,
-              dayAfterTomorrowAvg: dayAfterTomorrowForecast.avg ?? 0,
-              city: _currentWeather?.cityName ?? 'Unknown',
-              updateTime: updateTime,
-              tomorrowDay:tomorrowDay,
-              dayAfterTomorrowDay:dayAfterTomorrowDay,
-            ),
-            SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                PrimaryButton(
-                  title: 'ADD LOCATION',
-                  titleColor: Colors.grey,
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const AddLocationScreen()),
-                    );
-                  },
-                ),
-                SizedBox(width: 16), // ระยะห่างระหว่างปุ่ม
-                PrimaryButton(
-                  title: 'MANAGE',
-                  titleColor: Colors.grey,
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const ManageScreen()),
-                    );
-                  },
+        return MaterialApp(
+          home: Scaffold(
+            backgroundColor: color.backgroundPrimary,
+            appBar: CustomAppBar(),
+            body: Column(
+              children: <Widget>[
+                SizedBox(height: 16),
+                if (dailyForecast != null && tomorrowForecast != null && dayAfterTomorrowForecast != null)
+                  CardStatus(
+                    dailyAvg: dailyForecast.avg ?? 0,
+                    tomorrowAvg: tomorrowForecast.avg ?? 0,
+                    dayAfterTomorrowAvg: dayAfterTomorrowForecast.avg ?? 0,
+                    city: _currentWeather?.cityName ?? 'Unknown',
+                    updateTime: updateTime,
+                    tomorrowDay: tomorrowDay,
+                    dayAfterTomorrowDay: dayAfterTomorrowDay,
+                  ),
+                SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    PrimaryButton(
+                      title: 'ADD LOCATION',
+                      titleColor: Colors.grey,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AddLocationScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    SizedBox(width: 16), // ระยะห่างระหว่างปุ่ม
+                    PrimaryButton(
+                      title: 'MANAGE',
+                      titleColor: Colors.grey,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ManageScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
