@@ -1,6 +1,3 @@
-
-import 'dart:ffi';
-
 import 'package:core_libs/dependency_injection/get_it.dart';
 import 'package:core_ui/widgets/elements/botton/primary_button.dart';
 import 'package:flutter/material.dart';
