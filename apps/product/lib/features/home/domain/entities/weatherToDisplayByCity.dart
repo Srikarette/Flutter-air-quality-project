@@ -33,12 +33,14 @@ class WeatherData {
   String? aqi;
   Time? time;
   Station? station;
+  List<double>? geo; // Added geo field
 
   WeatherData({
     this.uid,
     this.aqi,
     this.time,
     this.station,
+    this.geo, // Added geo field
   });
 
   factory WeatherData.fromJson(dynamic json) {
@@ -47,6 +49,7 @@ class WeatherData {
       aqi: json['aqi'],
       time: json['time'] != null ? Time.fromJson(json['time']) : null,
       station: json['station'] != null ? Station.fromJson(json['station']) : null,
+      geo: json['station'] != null && json['station']['geo'] != null ? List<double>.from(json['station']['geo']) : null, // Added geo field
     );
   }
 
@@ -59,6 +62,9 @@ class WeatherData {
     }
     if (station != null) {
       map['station'] = station?.toJson();
+    }
+    if (geo != null) { // Added geo field
+      map['geo'] = geo;
     }
     return map;
   }
