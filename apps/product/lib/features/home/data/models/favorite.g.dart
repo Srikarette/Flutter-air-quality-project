@@ -20,19 +20,25 @@ class FavoriteAdapter extends TypeAdapter<Favorite> {
       uid: fields[0] as int,
       name: fields[1] as String,
       country: fields[2] as String,
+      aqi: fields[3] as String?,
+      stime: fields[4] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Favorite obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.uid)
       ..writeByte(1)
       ..write(obj.name)
       ..writeByte(2)
-      ..write(obj.country);
+      ..write(obj.country)
+      ..writeByte(3)
+      ..write(obj.aqi)
+      ..writeByte(4)
+      ..write(obj.stime);
   }
 
   @override

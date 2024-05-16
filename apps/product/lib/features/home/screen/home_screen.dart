@@ -30,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               PrimaryButton(
-                title: 'ADD LOCATION',
+                title: 'ADD BOOKMARK',
                 titleColor: Colors.grey,
                 onPressed: () {
                   Navigator.push(
@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(width: 16), // ระยะห่างระหว่างปุ่ม
               PrimaryButton(
-                title: 'MANAGE',
+                title: 'BOOKMARK',
                 titleColor: Colors.grey,
                 onPressed: () {
                   Navigator.push(

@@ -3,13 +3,27 @@ import 'package:hive/hive.dart';
 part 'favorite.g.dart';
 
 @HiveType(typeId: 0)
-class Favorite {
+class Favorite extends HiveObject {
   @HiveField(0)
-  final int uid;
-  @HiveField(1)
-  final String name;
-  @HiveField(2)
-  final String country;
+  int uid;
 
-  Favorite({required this.uid, required this.name, required this.country});
+  @HiveField(1)
+  String name;
+
+  @HiveField(2)
+  String country;
+
+  @HiveField(3)
+  String? aqi;
+
+  @HiveField(4)
+  String? stime;
+
+  Favorite({
+    required this.uid,
+    required this.name,
+    required this.country,
+    this.aqi,
+    this.stime,
+  });
 }

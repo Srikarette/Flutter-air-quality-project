@@ -28,16 +28,18 @@ class _LocationListState extends State<LocationList> {
       setState(() {
         locations = json.decode(response.body)['data'];
       });
+      print(locations);
     } else {
       throw Exception('Failed to load data');
     }
   }
 
-  void addToFavorites(int uid, String name, String country) async {
+  void addToFavorites(
+      int uid, String name, String country, String aqi, String stime) async {
     var box = Hive.box<Favorite>('favorites');
-    var favorite = Favorite(uid: uid, name: name, country: country);
-    print(favorite.name);
-    box.put(uid, favorite);
+    var favorite = Favorite(
+        uid: uid, name: name, country: country, aqi: aqi, stime: stime);
+    await box.put(uid, favorite);
   }
 
   @override
@@ -58,6 +60,8 @@ class _LocationListState extends State<LocationList> {
                   location['uid'],
                   location['station']['name'],
                   location['station']['country'],
+                  location['aqi'],
+                  location['time']['stime'],
                 );
               },
             ),
