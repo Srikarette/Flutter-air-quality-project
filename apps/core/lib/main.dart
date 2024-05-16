@@ -2,8 +2,14 @@ import 'package:core/dependency_injection/injector.dart';
 import 'package:core/router/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:product/features/home/data/models/favorite.dart';
 
-void main() {
+Future<void> main() async {
+  await Hive.initFlutter();
+  Hive.registerAdapter(FavoriteAdapter());
+  await Hive.openBox<Favorite>('favorites');
+
   registerServices();
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const ProviderScope(child: MyApp()));
