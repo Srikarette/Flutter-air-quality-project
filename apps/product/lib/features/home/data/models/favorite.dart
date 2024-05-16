@@ -5,13 +5,13 @@ part 'favorite.g.dart';
 @HiveType(typeId: 0)
 class Favorite extends HiveObject {
   @HiveField(0)
-  int uid;
+  num? uid;
 
   @HiveField(1)
-  String name;
+  String? name;
 
   @HiveField(2)
-  String country;
+  String? country;
 
   @HiveField(3)
   String? aqi;
@@ -23,7 +23,7 @@ class Favorite extends HiveObject {
     required this.uid,
     required this.name,
     required this.country,
-    this.aqi,
-    this.stime,
+    required this.aqi,
+    required this.stime,
   });
 }
