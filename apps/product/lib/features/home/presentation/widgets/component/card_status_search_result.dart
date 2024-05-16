@@ -1,6 +1,9 @@
+import 'package:core_ui/theme/color/theme_color.dart';
+import 'package:core_ui/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CardSearchStatus extends StatelessWidget {
+class CardSearchStatus extends ConsumerWidget {
   final String dailyAvg;
   final String city;
   final String updateTime;
@@ -49,7 +52,7 @@ class CardSearchStatus extends StatelessWidget {
     }
   }
 
-  Widget _buildValueContainer(num value) {
+  Widget _buildValueContainer(num value ,IThemeColor theme) {
     Color color = _getColor(value);
     return Column(
       children: [
@@ -73,7 +76,8 @@ class CardSearchStatus extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(appThemeProvider).themeColor;
     num dailyAvgValue = num.tryParse(dailyAvg) ?? 0;
     Color mainColor = _getColor(dailyAvgValue);
 
@@ -95,17 +99,17 @@ class CardSearchStatus extends StatelessWidget {
                     const SizedBox(height: 1),
                     Text(
                       '$dailyAvgValue',
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: theme.text,
                         fontSize: 28.0,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 1),
-                    const Text(
+                     Text(
                       'US AQI',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: theme.text,
                         fontSize: 12.0,
                         fontWeight: FontWeight.bold,
                       ),
@@ -115,14 +119,14 @@ class CardSearchStatus extends StatelessWidget {
               ),
             ),
             Container(
-              decoration: BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: Colors.black,
-                  width: 2,
-                ),
-              ),
+  decoration: BoxDecoration(
+    color: theme.backgroundSecondary, 
+    borderRadius: BorderRadius.circular(10), 
+    border: Border.all(
+      color: theme.backgroundSecondary,
+      width: 2, 
+    ),
+  ),
               child: Column(
                 children: [
                   Container(
@@ -133,24 +137,29 @@ class CardSearchStatus extends StatelessWidget {
                         padding: const EdgeInsets.all(12.0),
                         child: Text(
                           city,
-                          style: const TextStyle(
-                            color: Colors.white,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: theme.text,
                             fontWeight: FontWeight.bold,
-                            fontSize: 16.0,
+                            fontSize: 20.0,
                           ),
                         ),
                       ),
                     ),
                   ),
                   Container(
-                    width: 240,
-                    height: 15,
-                    color: Colors.white, // Set the background color to white
+                    width: 160,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      color: mainColor,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                     child: Center(
                       child: Text(
                         updateTime,
-                        style: const TextStyle(
-                          color: Colors.black, // Change the text color to black for better contrast
+                        style:TextStyle(
+                          color: theme.text, 
                           fontWeight: FontWeight.bold,
                           fontSize: 12.0,
                         ),
