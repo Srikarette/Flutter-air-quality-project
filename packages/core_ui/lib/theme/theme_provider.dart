@@ -1,4 +1,3 @@
-
 import 'package:core_ui/theme/color/theme_color.dart';
 import 'package:core_ui/theme/theme_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
