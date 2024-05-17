@@ -75,15 +75,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _fetchSearchWeather(String city) async {
     try {
-      final weatherData = await _weatherSearchService.getWeatherDataByCity(city);
+      final weatherData =
+          await _weatherSearchService.getWeatherDataByCity(city);
       final filteredData = WeatherToDisplayByCity(
         weatherDataList: weatherData.weatherDataList?.where((data) {
-          final dateTime = DateTime.parse(data.time?.stime ?? '');
-          final now = DateTime.now();
-          final isWithinPastYear = dateTime.isAfter(now.subtract(Duration(days: dayCounter)));
-          final hasAqiData = data.aqi != "-";
-          return isWithinPastYear && hasAqiData;
-        }).toList() ?? [],
+              final dateTime = DateTime.parse(data.time?.stime ?? '');
+              final now = DateTime.now();
+              final isWithinPastYear =
+                  dateTime.isAfter(now.subtract(Duration(days: dayCounter)));
+              final hasAqiData = data.aqi != "-";
+              return isWithinPastYear && hasAqiData;
+            }).toList() ??
+            [],
       );
       setState(() {
         _currentSearchWeather = filteredData;
@@ -126,7 +129,8 @@ class _HomeScreenState extends State<HomeScreen> {
         }
 
         String dayAfterTomorrowDay = 'Unknown';
-        if (dayAfterTomorrowForecast != null && dayAfterTomorrowForecast.day != null) {
+        if (dayAfterTomorrowForecast != null &&
+            dayAfterTomorrowForecast.day != null) {
           dayAfterTomorrowDay = formatDateDay(dayAfterTomorrowForecast.day!);
         }
 
@@ -141,7 +145,9 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: <Widget>[
-                  if (dailyForecast != null && tomorrowForecast != null && dayAfterTomorrowForecast != null)
+                  if (dailyForecast != null &&
+                      tomorrowForecast != null &&
+                      dayAfterTomorrowForecast != null)
                     CardStatus(
                       dailyAvg: dailyForecast.avg ?? 0,
                       tomorrowAvg: tomorrowForecast.avg ?? 0,
@@ -157,12 +163,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       PrimaryButton(
                         title: 'Add Bookmarks',
-                        
                         onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>  AddLocationScreen(),
+                              builder: (context) => AddLocationScreen(),
                             ),
                           );
                         },
@@ -170,12 +175,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(width: 16),
                       PrimaryButton(
                         title: 'Bookmarks',
-                        
                         onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>  FavoriteList(),
+                              builder: (context) => FavoriteList(),
                             ),
                           );
                         },
@@ -184,34 +188,38 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(width: 16),
                   const Text(
-                              'Search result',
-                              style: TextStyle(color: Colors.grey),
-                            ),
+                    'Search result',
+                    style: TextStyle(color: Colors.grey),
+                  ),
                   if (_currentSearchWeather?.weatherDataList != null)
                     Expanded(
-                        child: Column(
-                          children: [
-                            Expanded(
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  children: _currentSearchWeather!.weatherDataList!.map((weatherData) {
-                                    return CardSearchStatus(
-                                      dailyAvg: weatherData.aqi ?? 'Unknown',
-                                      city: weatherData.station?.name ?? 'Unknown',
-                                      updateTime: weatherData.time?.stime ?? 'Unknown',
-                                    );
-                                  }).toList(),
-                                ),
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                children: _currentSearchWeather!
+                                    .weatherDataList!
+                                    .map((weatherData) {
+                                  return CardSearchStatus(
+                                    dailyAvg: weatherData.aqi ?? 'Unknown',
+                                    city:
+                                        weatherData.station?.name ?? 'Unknown',
+                                    updateTime:
+                                        weatherData.time?.stime ?? 'Unknown',
+                                  );
+                                }).toList(),
                               ),
                             ),
-                            const SizedBox(height: 16),
-                            const Icon(Icons.arrow_downward, color: Colors.grey),
-                            const Text(
-                              'Scroll down for more',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(height: 10),
+                          const Icon(Icons.arrow_downward, color: Colors.grey),
+                          const Text(
+                            'Scroll down for more',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ],
+                      ),
                     ),
                 ],
               ),
