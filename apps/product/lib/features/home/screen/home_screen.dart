@@ -137,58 +137,55 @@ class _HomeScreenState extends State<HomeScreen> {
               searchController: _searchController,
               onSearchSubmitted: _searchWeatherByCity,
             ),
-            body: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: <Widget>[
-                  if (dailyForecast != null && tomorrowForecast != null && dayAfterTomorrowForecast != null)
-                    CardStatus(
-                      dailyAvg: dailyForecast.avg ?? 0,
-                      tomorrowAvg: tomorrowForecast.avg ?? 0,
-                      dayAfterTomorrowAvg: dayAfterTomorrowForecast.avg ?? 0,
-                      city: _currentWeather?.cityName ?? 'Unknown',
-                      updateTime: updateTime,
-                      tomorrowDay: tomorrowDay,
-                      dayAfterTomorrowDay: dayAfterTomorrowDay,
+            body: Stack(
+              children: [
+                Column(
+                  children: <Widget>[
+                    const SizedBox(height: 16),
+                    if (dailyForecast != null && tomorrowForecast != null && dayAfterTomorrowForecast != null)
+                      CardStatus(
+                        dailyAvg: dailyForecast.avg ?? 0,
+                        tomorrowAvg: tomorrowForecast.avg ?? 0,
+                        dayAfterTomorrowAvg: dayAfterTomorrowForecast.avg ?? 0,
+                        city: _currentWeather?.cityName ?? 'Unknown',
+                        updateTime: updateTime,
+                        tomorrowDay: tomorrowDay,
+                        dayAfterTomorrowDay: dayAfterTomorrowDay,
+                      ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        PrimaryButton(
+                          title: 'ADD LOCATION',
+                          titleColor: Colors.grey,
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const AddLocationScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(width: 16),
+                        PrimaryButton(
+                          title: 'MANAGE',
+                          titleColor: Colors.grey,
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FavoriteList(),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
                     ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      PrimaryButton(
-                        title: 'Add Bookmarks',
-                        titleColor: Colors.grey,
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>  AddLocationScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(width: 16),
-                      PrimaryButton(
-                        title: 'Bookmarks',
-                        titleColor: Colors.grey,
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>  FavoriteList(),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                  const SizedBox(width: 16),
-                  const Text(
-                              'Search result',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                  if (_currentSearchWeather?.weatherDataList != null)
-                    Expanded(
+                    const SizedBox(height: 16),
+                    if (_currentSearchWeather?.weatherDataList != null)
+                      Expanded(
                         child: Column(
                           children: [
                             Expanded(
@@ -204,7 +201,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 16),
                             const Icon(Icons.arrow_downward, color: Colors.grey),
                             const Text(
                               'Scroll down for more',
@@ -212,9 +208,17 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ],
                         ),
+                      ),
+                  ],
+                ),
+                if (_isLoading)
+                  Container(
+                    color: Colors.black.withOpacity(0.0),
+                    child: const Center(
+                      child: CircularProgressIndicator(),
                     ),
-                ],
-              ),
+                  ),
+              ],
             ),
           ),
         );
