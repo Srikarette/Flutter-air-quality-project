@@ -141,7 +141,6 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: <Widget>[
-                  const SizedBox(height: 16),
                   if (dailyForecast != null && tomorrowForecast != null && dayAfterTomorrowForecast != null)
                     CardStatus(
                       dailyAvg: dailyForecast.avg ?? 0,
@@ -152,12 +151,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       tomorrowDay: tomorrowDay,
                       dayAfterTomorrowDay: dayAfterTomorrowDay,
                     ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       PrimaryButton(
-                        title: 'ADD LOCATION',
+                        title: 'Add Bookmarks',
                         titleColor: Colors.grey,
                         onPressed: () {
                           Navigator.push(
@@ -170,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const SizedBox(width: 16),
                       PrimaryButton(
-                        title: 'MANAGE',
+                        title: 'Bookmarks',
                         titleColor: Colors.grey,
                         onPressed: () {
                           Navigator.push(
@@ -183,7 +182,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(width: 16),
+                  const Text(
+                              'Search result',
+                              style: TextStyle(color: Colors.grey),
+                            ),
                   if (_currentSearchWeather?.weatherDataList != null)
                     Expanded(
                         child: Column(
@@ -201,6 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                             ),
+                            const SizedBox(height: 16),
                             const Icon(Icons.arrow_downward, color: Colors.grey),
                             const Text(
                               'Scroll down for more',

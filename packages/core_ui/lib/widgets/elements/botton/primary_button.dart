@@ -10,8 +10,8 @@ class PrimaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 150, // กำหนดความกว้างของปุ่ม
-      height: 50, // กำหนดความสูงของปุ่ม
+      width: 160, 
+      height: 50, 
       child: TextButton(
         onPressed: onPressed,
         style: TextButton.styleFrom(
