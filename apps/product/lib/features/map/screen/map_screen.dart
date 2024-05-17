@@ -208,6 +208,7 @@ class _MapScreenState extends State<MapScreen> {
             placeHolder: 'Search',
             controller: TextEditingController(),
             onSubmitted: _handleCitySearch,
+            width: 270,
           ),
           FlutterMap(
             options: MapOptions(
@@ -229,7 +230,8 @@ class _MapScreenState extends State<MapScreen> {
             right: 0,
             child: SafeArea(
               child: CustomSearchInput(
-                  controller: null, onSubmitted: (String word) => {}),
+                  controller: null, 
+                  onSubmitted: (String word) => {}, width: 270,),
             ),
           ),
           Positioned(

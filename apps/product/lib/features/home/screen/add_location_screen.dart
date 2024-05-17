@@ -137,6 +137,7 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                             placeHolder: 'Search city',
                             controller: _searchController,
                             onSubmitted: _searchWeatherByCity,
+                            width: 270,
                           ),
                         ],
                       ),
