@@ -1,12 +1,14 @@
 import 'package:product/features/home/data/models/weatherByCity.dart';
-
+import 'package:latlong2/latlong.dart';
 class WeatherToDisplayByCity {
   String? cityName;
   List<WeatherData>? weatherDataList;
+  LatLng? cityGeo;
 
   WeatherToDisplayByCity({
     this.cityName,
     this.weatherDataList,
+    this.cityGeo,
   });
 
   factory WeatherToDisplayByCity.fromWeatherByCity(AirQualityDataByCity weatherByCity) {
@@ -18,9 +20,26 @@ class WeatherToDisplayByCity {
     );
   }
 
+  factory WeatherToDisplayByCity.fromSearchLocation(AirQualityDataByCity weatherByCity) {
+    String? cityName = weatherByCity.data?.first.station?.name;
+    LatLng? cityGeo = weatherByCity.data?.first.station?.geo != null ?
+    LatLng(
+      weatherByCity.data!.first.station!.geo![0].toDouble(),
+      weatherByCity.data!.first.station!.geo![1].toDouble(),
+    )
+        : null;
+    List<WeatherData>? weatherDataList = weatherByCity.data?.map((data) => WeatherData.fromJson(data.toJson())).toList();
+    return WeatherToDisplayByCity(
+      cityName: cityName,
+      cityGeo: cityGeo,
+      weatherDataList: weatherDataList,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['cityName'] = cityName;
+    map['cityGeo'] = cityGeo?.toJson();
     if (weatherDataList != null) {
       map['weatherDataList'] = weatherDataList?.map((v) => v.toJson()).toList();
     }
