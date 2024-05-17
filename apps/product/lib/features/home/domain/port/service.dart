@@ -4,4 +4,5 @@ import 'package:product/features/home/domain/entities/weatherToDisplayByCity.dar
 abstract class WeatherProjectionService {
   Future<WeatherToDisplay> getCurrentLocationWeather();
   Future<WeatherToDisplayByCity> getWeatherDataByCity(String city);
+  Future<WeatherToDisplayByCity> getLocationBySearch(String city);
 }

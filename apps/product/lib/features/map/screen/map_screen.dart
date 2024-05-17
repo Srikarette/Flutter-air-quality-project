@@ -29,6 +29,8 @@ class _MapScreenState extends State<MapScreen> {
   WeatherToDisplayByCity? _currentSearchWeather;
   final _pmValue = ['No filter','0-50', '51-100', '101-200', '<200'];
   String _dropDownMenu = 'No filter';
+  String searchCity = "Chiang Mai";
+  final TextEditingController _searchController = TextEditingController();
 
   final dayCounter = 365;
 
@@ -38,7 +40,8 @@ class _MapScreenState extends State<MapScreen> {
     _weatherService = getIt.get<WeatherProjectionService>();
     _weatherSearchService = getIt.get<WeatherProjectionService>();
     _fetchCurrentWeather();
-    fetchMarkerFromCity('Chiang Mai');
+    fetchMarkerFromCity('Chiang mai');
+    // _fetchSearchWeather(searchCity);
   }
 
   Future<void> _fetchCurrentWeather() async {
@@ -60,10 +63,11 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
+
   Future<void> _fetchSearchWeather(String city) async {
     try {
       final weatherData =
-      await _weatherSearchService.getWeatherDataByCity(city);
+      await _weatherSearchService.getLocationBySearch(city);
       final filteredData = WeatherToDisplayByCity(
         weatherDataList: weatherData.weatherDataList
             ?.where((data) {
@@ -87,11 +91,9 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   bool _isMarkerInRange(String pm25) {
-
     if (_dropDownMenu == 'No filter') {
       return true;
     }
-
     int value = int.tryParse(pm25) ?? 0;
     if (_dropDownMenu == '0-50' && value >= 0 && value <= 50) {
       return true;
@@ -99,11 +101,12 @@ class _MapScreenState extends State<MapScreen> {
       return true;
     } else if (_dropDownMenu == '101-200' && value >= 101 && value <= 200) {
       return true;
-    } else if (_dropDownMenu == '<200' && value > 200) {
+    } else if (_dropDownMenu == '<200' && value >= 200) {
       return true;
     }
     return false;
   }
+
 
   Color getColorForPm25(String pm25) {
     int value = int.tryParse(pm25) ?? 0;
@@ -134,7 +137,7 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<void> fetchMarkerFromCity(String city) async {
     try {
-      final weatherData = await _weatherSearchService.getWeatherDataByCity(city);
+      final weatherData = await _weatherSearchService.getLocationBySearch(city);
       final filteredData = weatherData.weatherDataList?.where((data) {
         final dateTime = DateTime.parse(data.time?.stime ?? '');
         final now = DateTime.now();
@@ -194,17 +197,22 @@ class _MapScreenState extends State<MapScreen> {
         );
       }
       setState(() {
-        fetchMarkerFromCity(city);
+
       });
     } catch (error) {
-      print("Error fetching markers: $error");
+      error;
     }
   }
 
   void _handleCitySearch(String city) {
-    _fetchCurrentWeather();
-    fetchMarkerFromCity(city);
+      setState(() {
+        searchCity = city;
+      });
+      // print(searchCity);
+      fetchMarkerFromCity(searchCity);
+      _fetchSearchWeather(searchCity);
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -220,15 +228,10 @@ class _MapScreenState extends State<MapScreen> {
       )
           : Stack(
         children: [
-          CustomSearchInput(
-            placeHolder: 'Search',
-            controller: TextEditingController(),
-            onSubmitted: _handleCitySearch,
-          ),
           FlutterMap(
             options: MapOptions(
               initialCenter: _currentWeather!.cityGeo,
-              initialZoom: 5,
+              initialZoom: 13,
             ),
             children: [
               TileLayer(
@@ -245,7 +248,7 @@ class _MapScreenState extends State<MapScreen> {
             right: 0,
             child: SafeArea(
               child: CustomSearchInput(
-                  controller: null, onSubmitted: (String word) => {}),
+                  controller: _searchController, onSubmitted: _handleCitySearch ),
             ),
           ),
           Positioned(
@@ -288,6 +291,7 @@ class _MapScreenState extends State<MapScreen> {
                   onChanged: (String? newValue) {
                     setState(() {
                       _dropDownMenu = newValue!;
+                      fetchMarkerFromCity(searchCity); // Call fetchMarkerFromCity with updated filter value
                     });
                   },
                   value: _dropDownMenu,
