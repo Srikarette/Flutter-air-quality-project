@@ -38,15 +38,17 @@ class _MapScreenState extends State<MapScreen> {
     _weatherService = getIt.get<WeatherProjectionService>();
     _weatherSearchService = getIt.get<WeatherProjectionService>();
     _fetchCurrentWeather();
-    fetchMarkerFromCity('Chiang Mai');
   }
 
   Future<void> _fetchCurrentWeather() async {
     try {
       final weatherData = await _weatherService.getCurrentLocationWeather();
+
       setState(() {
         _currentWeather = weatherData;
+        fetchMarkerFromCity(_currentWeather!.cityName);
       });
+
       if (_currentWeather?.cityGeo != null) {
         _currentWeather!.cityGeo;
       } else {
@@ -143,14 +145,14 @@ class _MapScreenState extends State<MapScreen> {
         return isWithinPastYear && hasAqiData && _isMarkerInRange(data.aqi ?? '');
       }).toList() ?? [];
 
-      markers.clear();
+      List<Marker> newMarkers = [];
       for (var data in filteredData) {
         final List<double> geo = data.geo ?? [];
         final LatLng coordinates = LatLng(geo[0], geo[1]);
         final pm25 = data.aqi ?? '-';
         final stationName = data.station?.name ?? '';
-        // print('Adding marker with AQI: $pm25');
-        markers.add(
+        print('Adding marker with AQI: $pm25');
+        newMarkers.add(
           Marker(
             point: coordinates,
             width: 40,
@@ -193,8 +195,9 @@ class _MapScreenState extends State<MapScreen> {
           ),
         );
       }
+
       setState(() {
-        fetchMarkerFromCity(city);
+        markers = newMarkers;
       });
     } catch (error) {
       print("Error fetching markers: $error");
@@ -228,7 +231,9 @@ class _MapScreenState extends State<MapScreen> {
           FlutterMap(
             options: MapOptions(
               initialCenter: _currentWeather!.cityGeo,
-              initialZoom: 5,
+              initialZoom: 12,
+              minZoom: 3,
+              maxZoom: 18,
             ),
             children: [
               TileLayer(
@@ -289,6 +294,7 @@ class _MapScreenState extends State<MapScreen> {
                     setState(() {
                       _dropDownMenu = newValue!;
                     });
+                    fetchMarkerFromCity(_currentWeather!.cityName);
                   },
                   value: _dropDownMenu,
                   underline: Container(),
