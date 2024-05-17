@@ -1,6 +1,5 @@
 import 'package:core_libs/dependency_injection/get_it.dart';
 import 'package:core_ui/theme/theme_provider.dart';
-import 'package:core_ui/widgets/composes/navbar/app-bar.dart';
 import 'package:core_ui/widgets/elements/input/search_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
