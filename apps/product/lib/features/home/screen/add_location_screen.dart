@@ -160,93 +160,74 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
-        final color = ref.watch(appThemeProvider).themeColor;
+        final theme = ref.watch(appThemeProvider).themeColor;
 
         return Scaffold(
-          backgroundColor: color.backgroundPrimary,
-          appBar: AppBar(
-            title: const Text('Add Location'),
-            backgroundColor: const Color.fromRGBO(29, 196, 250, 1),
-          ),
-          body: Stack(
-            children: [
-              Column(
+            backgroundColor: theme.backgroundPrimary,
+            appBar: AppBar(
+              title:  Text('Add Bookmarks',
+              style: TextStyle(
+                          color: theme.text,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 26.0,
+                        ),),
+              backgroundColor: const Color.fromRGBO(29, 196, 250, 1),
+            ),
+            body: Column(children: [
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                spreadRadius: 1,
-                                blurRadius: 5,
-                                offset: const Offset(0, 3), // changes position of shadow
-                              ),
-                            ],
+                  Expanded(
+                    child: Container(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CustomSearchInput(
+                            placeHolder: 'Search city',
+                            controller: _searchController,
+                            onSubmitted: _searchWeatherByCity, width: 350,
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              CustomSearchInput(
-                                placeHolder: 'Search city',
-                                controller: _searchController,
-                                onSubmitted: _searchWeatherByCity,
-                                width: 270,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  if (_currentSearchWeather?.weatherDataList != null)
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: _currentSearchWeather!.weatherDataList!
-                              .map((weatherData) {
-                            return Stack(
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    addToFavorites(
-                                      weatherData.uid,
-                                      weatherData.station!.name,
-                                      weatherData.station!.country,
-                                      weatherData.aqi,
-                                      weatherData.time!.stime,
-                                    );
-                                    _showBookmarkDialog(context); // Show the pop-up
-                                  },
-                                  child: CardSearchStatus(
-                                    dailyAvg: weatherData.aqi ?? 'Unknown',
-                                    city: weatherData.station?.name ?? 'Unknown',
-                                    updateTime: weatherData.time?.stime ?? 'Unknown',
-                                  ),
-                                ),
-                              ],
-                            );
-                          }).toList(),
-                        ),
+                        ],
                       ),
                     ),
+                  ),
                 ],
               ),
-              if (_isLoading)
-                Container(
-                  color: Colors.black.withOpacity(0.0),
-                  child: const Center(
-                    child: CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              if (_currentSearchWeather?.weatherDataList != null)
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: _currentSearchWeather!.weatherDataList!
+                          .map((weatherData) {
+                        return Stack(
+                                      children: [
+                                        InkWell(
+                                          onTap: () {
+                                            addToFavorites(
+                                              weatherData.uid,
+                                              weatherData.station!.name,
+                                              weatherData.station!.country,
+                                              weatherData.aqi,
+                                              weatherData.time!.stime,
+                                            );
+                                            _showBookmarkDialog(context); // Show the pop-up
+                                          },
+                                          child: CardSearchStatus(
+                                            dailyAvg: weatherData.aqi ?? 'Unknown',
+                                            city: weatherData.station?.name ?? 'Unknown',
+                                            updateTime:
+                                                weatherData.time?.stime ?? 'Unknown',
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  }).toList(),
+                    ),
                   ),
                 ),
-            ],
-          ),
-        );
+            ]));
       },
     );
   }

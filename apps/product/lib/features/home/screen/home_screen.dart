@@ -75,15 +75,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _fetchSearchWeather(String city) async {
     try {
-      final weatherData = await _weatherSearchService.getWeatherDataByCity(city);
+      final weatherData =
+          await _weatherSearchService.getWeatherDataByCity(city);
       final filteredData = WeatherToDisplayByCity(
         weatherDataList: weatherData.weatherDataList?.where((data) {
-          final dateTime = DateTime.parse(data.time?.stime ?? '');
-          final now = DateTime.now();
-          final isWithinPastYear = dateTime.isAfter(now.subtract(Duration(days: dayCounter)));
-          final hasAqiData = data.aqi != "-";
-          return isWithinPastYear && hasAqiData;
-        }).toList() ?? [],
+              final dateTime = DateTime.parse(data.time?.stime ?? '');
+              final now = DateTime.now();
+              final isWithinPastYear =
+                  dateTime.isAfter(now.subtract(Duration(days: dayCounter)));
+              final hasAqiData = data.aqi != "-";
+              return isWithinPastYear && hasAqiData;
+            }).toList() ??
+            [],
       );
       setState(() {
         _currentSearchWeather = filteredData;
@@ -126,7 +129,8 @@ class _HomeScreenState extends State<HomeScreen> {
         }
 
         String dayAfterTomorrowDay = 'Unknown';
-        if (dayAfterTomorrowForecast != null && dayAfterTomorrowForecast.day != null) {
+        if (dayAfterTomorrowForecast != null &&
+            dayAfterTomorrowForecast.day != null) {
           dayAfterTomorrowDay = formatDateDay(dayAfterTomorrowForecast.day!);
         }
 
@@ -137,88 +141,88 @@ class _HomeScreenState extends State<HomeScreen> {
               searchController: _searchController,
               onSearchSubmitted: _searchWeatherByCity,
             ),
-            body: Stack(
-              children: [
-                Column(
-                  children: <Widget>[
-                    const SizedBox(height: 16),
-                    if (dailyForecast != null && tomorrowForecast != null && dayAfterTomorrowForecast != null)
-                      CardStatus(
-                        dailyAvg: dailyForecast.avg ?? 0,
-                        tomorrowAvg: tomorrowForecast.avg ?? 0,
-                        dayAfterTomorrowAvg: dayAfterTomorrowForecast.avg ?? 0,
-                        city: _currentWeather?.cityName ?? 'Unknown',
-                        updateTime: updateTime,
-                        tomorrowDay: tomorrowDay,
-                        dayAfterTomorrowDay: dayAfterTomorrowDay,
-                      ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        PrimaryButton(
-                          title: 'ADD LOCATION',
-                          titleColor: Colors.grey,
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const AddLocationScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                        const SizedBox(width: 16),
-                        PrimaryButton(
-                          title: 'MANAGE',
-                          titleColor: Colors.grey,
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => FavoriteList(),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
+            body: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: <Widget>[
+                  if (dailyForecast != null &&
+                      tomorrowForecast != null &&
+                      dayAfterTomorrowForecast != null)
+                    CardStatus(
+                      dailyAvg: dailyForecast.avg ?? 0,
+                      tomorrowAvg: tomorrowForecast.avg ?? 0,
+                      dayAfterTomorrowAvg: dayAfterTomorrowForecast.avg ?? 0,
+                      city: _currentWeather?.cityName ?? 'Unknown',
+                      updateTime: updateTime,
+                      tomorrowDay: tomorrowDay,
+                      dayAfterTomorrowDay: dayAfterTomorrowDay,
                     ),
-                    const SizedBox(height: 16),
-                    if (_currentSearchWeather?.weatherDataList != null)
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Expanded(
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  children: _currentSearchWeather!.weatherDataList!.map((weatherData) {
-                                    return CardSearchStatus(
-                                      dailyAvg: weatherData.aqi ?? 'Unknown',
-                                      city: weatherData.station?.name ?? 'Unknown',
-                                      updateTime: weatherData.time?.stime ?? 'Unknown',
-                                    );
-                                  }).toList(),
-                                ),
-                              ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      PrimaryButton(
+                        title: 'Add Bookmarks',
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AddLocationScreen(),
                             ),
-                            const Icon(Icons.arrow_downward, color: Colors.grey),
-                            const Text(
-                              'Scroll down for more',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                          ],
-                        ),
+                          );
+                        },
                       ),
-                  ],
-                ),
-                if (_isLoading)
-                  Container(
-                    color: Colors.black.withOpacity(0.0),
-                    child: const Center(
-                      child: CircularProgressIndicator(),
-                    ),
+                      const SizedBox(width: 16),
+                      PrimaryButton(
+                        title: 'Bookmarks',
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FavoriteList(),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
-              ],
+                  const SizedBox(width: 16),
+                  const Text(
+                    'Search result',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                  if (_currentSearchWeather?.weatherDataList != null)
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                children: _currentSearchWeather!
+                                    .weatherDataList!
+                                    .map((weatherData) {
+                                  return CardSearchStatus(
+                                    dailyAvg: weatherData.aqi ?? 'Unknown',
+                                    city:
+                                        weatherData.station?.name ?? 'Unknown',
+                                    updateTime:
+                                        weatherData.time?.stime ?? 'Unknown',
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          const Icon(Icons.arrow_downward, color: Colors.grey),
+                          const Text(
+                            'Scroll down for more',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
         );

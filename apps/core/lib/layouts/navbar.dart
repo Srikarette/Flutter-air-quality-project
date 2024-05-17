@@ -1,5 +1,7 @@
 import 'package:core/router/router.dart';
+import 'package:core_ui/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class BottomNavigation extends StatefulWidget {
@@ -28,46 +30,40 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: widget.child,
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              spreadRadius: 5,
-              blurRadius: 5,
-              offset: const Offset(0, 3), 
+    return Consumer(builder: (context, ref, child) {
+      final color = ref.watch(appThemeProvider).themeColor;
+      return Scaffold(
+        body: widget.child,
+        bottomNavigationBar: ClipRRect(
+          child: Container(
+            decoration: BoxDecoration(
+              color: color.backgroundPrimary, // ใส่สีพื้นหลังตาม theme
             ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
+            child: BottomNavigationBar(
+              backgroundColor: color.backgroundSecondary,
+              type: BottomNavigationBarType.fixed,
+              onTap: (index) {
+                onTap(context, index);
+              },
+              currentIndex: _currentIndex,
+              items: [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home_outlined),
+                  label: 'Home',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.map_outlined),
+                  label: 'Map',
+                ),
+              ],
+              selectedItemColor: color.text,
+              selectedLabelStyle: TextStyle(fontSize: 15),
+              unselectedItemColor: Colors.grey,
+              unselectedLabelStyle: TextStyle(fontSize: 12),
+            ),
           ),
-          child: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            onTap: (index) {
-              onTap(context, index);
-            },
-            currentIndex: _currentIndex,
-            items: const [
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.home_outlined), label: 'หน้าหลัก'),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.map_outlined), label: 'แผนที่'),
-              // BottomNavigationBarItem(
-              //     icon: Icon(Icons.emoji_events_outlined), label: 'อันดับ'),
-            ],
-          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

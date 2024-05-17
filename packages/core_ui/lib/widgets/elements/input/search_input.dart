@@ -24,6 +24,7 @@ class CustomSearchInput extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           decoration: BoxDecoration(
             color: Colors.white,
+            border: Border.all(color: Colors.grey),
             borderRadius: BorderRadius.circular(20),
           ),
           child: TextField(

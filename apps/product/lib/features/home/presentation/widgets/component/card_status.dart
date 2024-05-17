@@ -121,7 +121,7 @@ class CardStatus extends ConsumerWidget {
                         fontSize: 12.0,
                         fontWeight: FontWeight.bold,
                       ),
-                    ), // ข้อความ
+                    ), 
                   ],
                 ),
               ),
