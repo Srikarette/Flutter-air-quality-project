@@ -132,8 +132,6 @@ class _MapScreenState extends State<MapScreen> {
     return Colors.transparent;
   }
 
-
-
   Future<void> fetchMarkerFromCity(String city) async {
     try {
       final weatherData = await _weatherSearchService.getWeatherDataByCity(city);
@@ -151,7 +149,6 @@ class _MapScreenState extends State<MapScreen> {
         final LatLng coordinates = LatLng(geo[0], geo[1]);
         final pm25 = data.aqi ?? '-';
         final stationName = data.station?.name ?? '';
-        print('Adding marker with AQI: $pm25');
         newMarkers.add(
           Marker(
             point: coordinates,
@@ -211,6 +208,7 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     String updateTime = 'Unknown';
     if (_currentWeather?.updateTime != null) {
       updateTime = formatDateTime(_currentWeather!.updateTime);
