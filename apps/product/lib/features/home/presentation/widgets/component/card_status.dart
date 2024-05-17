@@ -143,6 +143,8 @@ class CardStatus extends ConsumerWidget {
                     child: Center(
                       child: Text(
                         city,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: theme.text,
                           fontWeight: FontWeight.bold,

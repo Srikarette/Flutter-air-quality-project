@@ -223,7 +223,7 @@ class _MapScreenState extends State<MapScreen> {
           CustomSearchInput(
             placeHolder: 'Search',
             controller: TextEditingController(),
-            onSubmitted: _handleCitySearch,
+            onSubmitted: _handleCitySearch, width: 300,
           ),
           FlutterMap(
             options: MapOptions(
@@ -241,11 +241,11 @@ class _MapScreenState extends State<MapScreen> {
           ),
           Positioned(
             top: 0,
-            left: 80,
+            left: 50,
             right: 0,
             child: SafeArea(
               child: CustomSearchInput(
-                  controller: null, onSubmitted: (String word) => {}),
+                  controller: null, onSubmitted: (String word) => {}, width: 300,),
             ),
           ),
           Positioned(
@@ -270,7 +270,7 @@ class _MapScreenState extends State<MapScreen> {
           ),
           Positioned(
             top: 60.0,
-            left: 30.0,
+            left: 35.0,
             child: SafeArea(
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),

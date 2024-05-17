@@ -1,0 +1,27 @@
+name: Run Tests
+
+on:
+  push:
+    branches:
+      - main  # Trigger the workflow on pushes to the main branch
+  pull_request:
+    branches:
+      - main  # Trigger the workflow on pull requests to the main branch
+
+jobs:
+  test:
+    name: Run Flutter Tests
+    runs-on: ubuntu-latest  # Use the latest version of Ubuntu as the runner
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2  # Checkout the code from the repository
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2  # Set up Flutter environment
+
+      - name: Install dependencies
+        run: flutter pub get  # Install project dependencies
+
+      - name: Run tests
+        run: flutter test  # Run Flutter tests
