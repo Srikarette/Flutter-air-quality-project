@@ -1,5 +1,7 @@
 import 'package:core_libs/dependency_injection/get_it.dart';
+import 'package:core_ui/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:product/features/home/data/models/favorite.dart';
 import 'package:product/features/home/domain/port/service.dart';
@@ -74,17 +76,31 @@ class _FavoriteListState extends State<FavoriteList> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Favorites')),
-      body: _isLoading
-          ? Center(
+    return Consumer(builder: (context, ref, child) {
+      final color = ref.watch(appThemeProvider).themeColor;
+      return Scaffold(
+        backgroundColor: color.backgroundPrimary,
+         appBar: AppBar(
+              title:  const Text('Bookmarks',
+              style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 26.0,
+                        ),),
+              backgroundColor: const Color.fromRGBO(29, 196, 250, 1),
+            ),
+        body: _isLoading
+          ? const Center(
               child: CircularProgressIndicator(),
             )
           : ValueListenableBuilder(
               valueListenable: Hive.box<Favorite>('favorites').listenable(),
               builder: (context, Box<Favorite> box, _) {
                 if (box.values.isEmpty) {
-                  return const Center(child: Text('No favorites added.'));
+                  return const Center(child: Text('No favorites added.',
+              style: TextStyle(
+            color: Colors.grey,
+          ),));
                 }
                 return ListView.builder(
                   itemCount: box.length,
@@ -92,7 +108,7 @@ class _FavoriteListState extends State<FavoriteList> {
                     var favorite = box.getAt(index);
                     return Column(
                       children: [
-                        Stack(
+                        const SizedBox(height: 10),Stack(
                           children: [
                             CardSearchStatus(
                               dailyAvg: favorite?.aqi ?? 'Unknown',
@@ -120,6 +136,6 @@ class _FavoriteListState extends State<FavoriteList> {
                 );
               },
             ),
-    );
+    );});
   }
 }

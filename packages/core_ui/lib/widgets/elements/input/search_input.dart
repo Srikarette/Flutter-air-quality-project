@@ -4,14 +4,14 @@ class CustomSearchInput extends StatelessWidget {
   final String? placeHolder;
   final TextEditingController? controller;
   final Function(String)? onSubmitted;
-  final double width;
+  final double? width;
 
   const CustomSearchInput({
     super.key,
     this.placeHolder,
     required this.controller,
     required this.onSubmitted,
-    required this.width,
+    this.width,
   });
 
   @override
@@ -24,6 +24,7 @@ class CustomSearchInput extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           decoration: BoxDecoration(
             color: Colors.white,
+            border: Border.all(color: Colors.grey),
             borderRadius: BorderRadius.circular(20),
           ),
           child: TextField(

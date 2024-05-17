@@ -1,6 +1,5 @@
 import 'package:core_libs/dependency_injection/get_it.dart';
 import 'package:core_ui/theme/theme_provider.dart';
-import 'package:core_ui/widgets/composes/navbar/app-bar.dart';
 import 'package:core_ui/widgets/elements/input/search_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -130,17 +129,17 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text(
+        title: const Text(
           'Success',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.green,
           ),
         ),
-        content: Text('Added to bookmarks successfully!'),
+        content: const Text('Added to bookmarks successfully!'),
         actions: <Widget>[
           TextButton(
-            child: Text(
+            child: const Text(
               'OK',
               style: TextStyle(
                 color: Colors.blue,
@@ -160,89 +159,87 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
-        final color = ref.watch(appThemeProvider).themeColor;
+        final theme = ref.watch(appThemeProvider).themeColor;
 
         return Scaffold(
-          backgroundColor: color.backgroundPrimary,
-          appBar: AppBar(
-            title: const Text('Add Location'),
-            backgroundColor: const Color.fromRGBO(29, 196, 250, 1),
-          ),
-          body: Stack(
-            children: [
-              Column(
+            backgroundColor: theme.backgroundPrimary,
+            appBar: AppBar(
+              title:  Text('Add Bookmarks',
+              style: TextStyle(
+                          color: theme.text,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 26.0,
+                        ),),
+              backgroundColor: const Color.fromRGBO(29, 196, 250, 1),
+            ),
+            body: Column(children: [
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                spreadRadius: 1,
-                                blurRadius: 5,
-                                offset: const Offset(0, 3), // changes position of shadow
-                              ),
-                            ],
+                  Expanded(
+                    child: Container(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CustomSearchInput(
+                            placeHolder: 'Search city',
+                            controller: _searchController,
+                            onSubmitted: _searchWeatherByCity, width: 350,
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              CustomSearchInput(
-                                placeHolder: 'Search city',
-                                controller: _searchController,
-                                onSubmitted: _searchWeatherByCity,
-                                width: 270,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  if (_currentSearchWeather?.weatherDataList != null)
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: _currentSearchWeather!.weatherDataList!
-                              .map((weatherData) {
-                            return Stack(
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    addToFavorites(
-                                      weatherData.uid,
-                                      weatherData.station!.name,
-                                      weatherData.station!.country,
-                                      weatherData.aqi,
-                                      weatherData.time!.stime,
-                                    );
-                                    _showBookmarkDialog(context); // Show the pop-up
-                                  },
-                                  child: CardSearchStatus(
-                                    dailyAvg: weatherData.aqi ?? 'Unknown',
-                                    city: weatherData.station?.name ?? 'Unknown',
-                                    updateTime: weatherData.time?.stime ?? 'Unknown',
-                                  ),
-                                ),
-                              ],
-                            );
-                          }).toList(),
-                        ),
+                        ],
                       ),
                     ),
+                  ),
                 ],
               ),
-              if (_isLoading)
-                Container(
-                  color: Colors.black.withOpacity(0.0),
-                  child: const Center(
-                    child: CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              if (_currentSearchWeather?.weatherDataList != null)
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        ..._currentSearchWeather!.weatherDataList!
+                            .map((weatherData) {
+                          return Stack(
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  addToFavorites(
+                                    weatherData.uid,
+                                    weatherData.station!.name,
+                                    weatherData.station!.country,
+                                    weatherData.aqi,
+                                    weatherData.time!.stime,
+                                  );
+                                  _showBookmarkDialog(context);
+                                },
+                                child: CardSearchStatus(
+                                  dailyAvg: weatherData.aqi ?? 'Unknown',
+                                  city: weatherData.station?.name ?? 'Unknown',
+                                  updateTime: weatherData.time?.stime ?? 'Unknown',
+                                ),
+                              ),
+                            ],
+                          );
+                        }),
+                        if (_isLoading)
+                          Visibility(
+                            visible: _isLoading,
+                            child: Container(
+                              color: Colors.black.withOpacity(0.5),
+                              child: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
+                ),
+                if (_isLoading)
+                const Center(
+                  child: CircularProgressIndicator(),
                 ),
             ],
           ),

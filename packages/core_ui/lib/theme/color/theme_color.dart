@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 abstract class IThemeColor {
   late Color backgroundPrimary;
   late Color backgroundSecondary;
+  late Color backgroundSky;
   late Color text;
   late Color selectedItem;
   late Color unSelectedItem;
@@ -14,6 +15,9 @@ class LightTheme implements IThemeColor {
 
   @override
   Color backgroundSecondary = Colors.black;
+
+  @override
+  Color backgroundSky = Color.fromRGBO(29, 196, 250, 1);
 
   @override
   Color selectedItem = Colors.green;
@@ -32,6 +36,9 @@ class DarkTheme implements IThemeColor {
 
   @override
   Color backgroundSecondary = Colors.white;
+
+  @override
+  Color backgroundSky = Colors.purple;
 
   @override
   Color selectedItem = Colors.green.shade700;
