@@ -19,11 +19,11 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build (BuildContext context, WidgetRef ref) {
-
+    final color = ref.watch(appThemeProvider).themeColor;
     final themeNotifier = ref.read(appThemeProvider.notifier);
     final themeProvider = ref.watch(appThemeProvider);
     return AppBar(
-      backgroundColor: const Color.fromRGBO(29, 196, 250, 1),
+      backgroundColor: color.backgroundSky,
       flexibleSpace: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 0.0),
         child: Padding(
