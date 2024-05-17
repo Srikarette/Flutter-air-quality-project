@@ -60,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _hasError = false;
       });
       if (_currentWeather?.cityName != null) {
-        _fetchSearchWeather(_currentWeather!.cityName!);
+        _fetchSearchWeather(_currentWeather!.cityName);
       } else {
         _fetchSearchWeather('');
       }

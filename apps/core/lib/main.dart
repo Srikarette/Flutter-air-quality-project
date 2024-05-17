@@ -7,10 +7,6 @@ void main() {
   registerServices();
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const ProviderScope(child: MyApp()));
-  registerServices();
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(const ProviderScope(child: MyApp()));
-  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
