@@ -4,12 +4,14 @@ class CustomSearchInput extends StatelessWidget {
   final String? placeHolder;
   final TextEditingController? controller;
   final Function(String)? onSubmitted;
+  final double width;
 
   const CustomSearchInput({
     super.key,
     this.placeHolder,
     required this.controller,
     required this.onSubmitted,
+    required this.width,
   });
 
   @override
@@ -17,7 +19,7 @@ class CustomSearchInput extends StatelessWidget {
     return Row(
       children: [
         Container(
-          width: 270,
+          width: width,
           height: 45,
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           decoration: BoxDecoration(
