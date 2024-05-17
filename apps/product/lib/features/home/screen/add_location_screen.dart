@@ -191,7 +191,7 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                           CustomSearchInput(
                             placeHolder: 'Search city',
                             controller: _searchController,
-                            onSubmitted: _searchWeatherByCity,
+                            onSubmitted: _searchWeatherByCity, width: 270,
                           ),
                         ],
                       ),
