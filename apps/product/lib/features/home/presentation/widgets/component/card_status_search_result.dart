@@ -119,14 +119,14 @@ class CardSearchStatus extends ConsumerWidget {
               ),
             ),
             Container(
-  decoration: BoxDecoration(
-    color: theme.backgroundSecondary, 
-    borderRadius: BorderRadius.circular(10), 
-    border: Border.all(
-      color: theme.backgroundSecondary,
-      width: 2, 
-    ),
-  ),
+              decoration: BoxDecoration(
+                color: theme.backgroundSecondary,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: theme.backgroundSecondary,
+                  width: 2,
+                ),
+              ),
               child: Column(
                 children: [
                   Container(

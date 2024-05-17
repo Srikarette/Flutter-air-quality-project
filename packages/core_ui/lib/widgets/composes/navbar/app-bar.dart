@@ -37,6 +37,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
                     placeHolder: 'Search city',
                     controller: searchController,
                     onSubmitted: onSearchSubmitted,
+                    width: 270,
                   ),
                   const Spacer(),
                    IconButton(
