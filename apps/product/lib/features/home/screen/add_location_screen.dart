@@ -1,5 +1,6 @@
 import 'package:core_libs/dependency_injection/get_it.dart';
 import 'package:core_ui/theme/theme_provider.dart';
+import 'package:core_ui/widgets/composes/navbar/app-bar.dart';
 import 'package:core_ui/widgets/elements/input/search_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,6 +39,8 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
 
   final dayCounter = 365;
   final TextEditingController _searchController = TextEditingController();
+  bool _isLoading = true;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -47,27 +50,41 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
     _fetchCurrentWeather();
   }
 
-  Future<void> _fetchCurrentWeather() async {
+   Future<void> _fetchCurrentWeather() async {
     try {
+      setState(() {
+        _isLoading = true;
+        _hasError = false;
+      });
+
       final weatherData = await _weatherService.getCurrentLocationWeather();
       setState(() {
         _currentWeather = weatherData;
+        _isLoading = false;
       });
+
       if (_currentWeather?.cityName != null) {
-        _fetchSearchWeather(_currentWeather!.cityName);
+        await _fetchSearchWeather(_currentWeather!.cityName);
       } else {
-        _fetchSearchWeather('');
+        await _fetchSearchWeather('');
       }
     } catch (error) {
-      setState(() {});
-      _fetchSearchWeather('');
+      setState(() {
+        _hasError = true;
+        _isLoading = false;
+      });
+      await _fetchSearchWeather('');
     }
   }
 
   Future<void> _fetchSearchWeather(String city) async {
     try {
-      final weatherData =
-          await _weatherSearchService.getWeatherDataByCity(city);
+      setState(() {
+        _isLoading = true;
+        _hasError = false;
+      });
+
+      final weatherData = await _weatherSearchService.getWeatherDataByCity(city);
       final filteredData = WeatherToDisplayByCity(
         weatherDataList: weatherData.weatherDataList?.where((data) {
               final dateTime = DateTime.parse(data.time?.stime ?? '');
@@ -79,16 +96,25 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
             }).toList() ??
             [],
       );
+
       setState(() {
         _currentSearchWeather = filteredData;
+        _isLoading = false;
       });
     } catch (error) {
-      setState(() {});
+      setState(() {
+        _hasError = true;
+        _isLoading = false;
+      });
     }
   }
 
   Future<void> _searchWeatherByCity(String city) async {
-    setState(() {});
+    setState(() {
+      _isLoading = true;
+      _hasError = false;
+    });
+
     await _fetchSearchWeather(city);
   }
 
@@ -99,6 +125,36 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
         uid: uid, name: name, country: country, aqi: aqi, stime: stime);
     await box.put(uid, favorite);
   }
+  void _showBookmarkDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(
+          'Success',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.green,
+          ),
+        ),
+        content: Text('Added to bookmarks successfully!'),
+        actions: <Widget>[
+          TextButton(
+            child: Text(
+              'OK',
+              style: TextStyle(
+                color: Colors.blue,
+              ),
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -135,8 +191,7 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                           CustomSearchInput(
                             placeHolder: 'Search city',
                             controller: _searchController,
-                            onSubmitted: _searchWeatherByCity,
-                            width: 270,
+                            onSubmitted: _searchWeatherByCity, width: 270,
                           ),
                         ],
                       ),
@@ -152,35 +207,28 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                       children: _currentSearchWeather!.weatherDataList!
                           .map((weatherData) {
                         return Stack(
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                addToFavorites(
-                                    weatherData.uid,
-                                    weatherData.station!.name,
-                                    weatherData.station!.country,
-                                    weatherData.aqi,
-                                    weatherData.time!.stime);
-                              },
-                              child: CardSearchStatus(
-                                dailyAvg: weatherData.aqi ?? 'Unknown',
-                                city: weatherData.station?.name ?? 'Unknown',
-                                updateTime:
-                                    weatherData.time?.stime ?? 'Unknown',
-                              ),
-                            ),
-                            const Positioned(
-                              top: 10,
-                              right: 10,
-                              child: Icon(
-                                Icons.favorite_border,
-                                color: Colors.red,
-                                size: 24.0,
-                              ),
-                            ),
-                          ],
-                        );
-                      }).toList(),
+                                      children: [
+                                        InkWell(
+                                          onTap: () {
+                                            addToFavorites(
+                                              weatherData.uid,
+                                              weatherData.station!.name,
+                                              weatherData.station!.country,
+                                              weatherData.aqi,
+                                              weatherData.time!.stime,
+                                            );
+                                            _showBookmarkDialog(context); // Show the pop-up
+                                          },
+                                          child: CardSearchStatus(
+                                            dailyAvg: weatherData.aqi ?? 'Unknown',
+                                            city: weatherData.station?.name ?? 'Unknown',
+                                            updateTime:
+                                                weatherData.time?.stime ?? 'Unknown',
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  }).toList(),
                     ),
                   ),
                 ),

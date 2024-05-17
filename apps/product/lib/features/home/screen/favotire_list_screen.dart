@@ -28,15 +28,18 @@ class FavoriteList extends StatelessWidget {
                         updateTime: favorite?.stime ?? 'Unknown',
                       ),
                       Positioned(
-                        top: 10,
-                        right: 10,
-                        child: IconButton(
-                          icon: Icon(Icons.delete),
-                          onPressed: () {
-                            box.deleteAt(index);
-                          },
-                        ),
-                      ),
+  bottom: 10,
+  right: 2,
+  child: IconButton(
+    icon: Icon(
+      Icons.delete,
+      color: Colors.red, 
+    ),
+    onPressed: () {
+      box.deleteAt(index);
+    },
+  ),
+),
                     ],
                   )
                 ],

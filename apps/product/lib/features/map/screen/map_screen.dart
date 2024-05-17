@@ -27,8 +27,8 @@ class _MapScreenState extends State<MapScreen> {
   List<Marker> markers = [];
   WeatherToDisplay? _currentWeather;
   WeatherToDisplayByCity? _currentSearchWeather;
-  final _pmValue = ['0-50', '51-100', '101-200', '<200'];
-  String _dropDownMenu = '0-50';
+  final _pmValue = ['No filter','0-50', '51-100', '101-200', '<200'];
+  String _dropDownMenu = 'No filter';
 
   final dayCounter = 365;
 
@@ -38,7 +38,7 @@ class _MapScreenState extends State<MapScreen> {
     _weatherService = getIt.get<WeatherProjectionService>();
     _weatherSearchService = getIt.get<WeatherProjectionService>();
     _fetchCurrentWeather();
-    fetchMarkerFromCity('Chiang mai');
+    fetchMarkerFromCity('Chiang Mai');
   }
 
   Future<void> _fetchCurrentWeather() async {
@@ -87,6 +87,11 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   bool _isMarkerInRange(String pm25) {
+    // Always return true when 'No filter' is selected
+    if (_dropDownMenu == 'No filter') {
+      return true;
+    }
+    // Check the range for other filter options
     int value = int.tryParse(pm25) ?? 0;
     if (_dropDownMenu == '0-50' && value >= 0 && value <= 50) {
       return true;
@@ -102,6 +107,7 @@ class _MapScreenState extends State<MapScreen> {
 
   Color getColorForPm25(String pm25) {
     int value = int.tryParse(pm25) ?? 0;
+    // Return color based on PM2.5 value even when 'No filter' is selected
     if (_dropDownMenu == '0-50' && value >= 0 && value <= 50) {
       return Colors.green;
     } else if (_dropDownMenu == '51-100' && value >= 51 && value <= 100) {
@@ -111,9 +117,19 @@ class _MapScreenState extends State<MapScreen> {
     } else if (_dropDownMenu == '<200' && value > 200) {
       return Colors.purpleAccent;
     }
-
-    return Colors.transparent;
+    // For 'No filter', return colors based on the PM2.5 value
+    if (value >= 0 && value <= 50) {
+      return Colors.green;
+    } else if (value >= 51 && value <= 100) {
+      return Colors.amberAccent;
+    } else if (value >= 101 && value <= 200) {
+      return Colors.red;
+    } else if (value > 200) {
+      return Colors.purpleAccent;
+    }
+    return Colors.transparent; // Default color
   }
+
 
 
   Future<void> fetchMarkerFromCity(String city) async {
@@ -207,13 +223,12 @@ class _MapScreenState extends State<MapScreen> {
           CustomSearchInput(
             placeHolder: 'Search',
             controller: TextEditingController(),
-            onSubmitted: _handleCitySearch,
-            width: 270,
+            onSubmitted: _handleCitySearch, width: 300,
           ),
           FlutterMap(
             options: MapOptions(
               initialCenter: _currentWeather!.cityGeo,
-              initialZoom: 10,
+              initialZoom: 5,
             ),
             children: [
               TileLayer(
@@ -226,12 +241,11 @@ class _MapScreenState extends State<MapScreen> {
           ),
           Positioned(
             top: 0,
-            left: 80,
+            left: 50,
             right: 0,
             child: SafeArea(
               child: CustomSearchInput(
-                  controller: null, 
-                  onSubmitted: (String word) => {}, width: 270,),
+                  controller: null, onSubmitted: (String word) => {}, width: 300,),
             ),
           ),
           Positioned(
@@ -256,7 +270,7 @@ class _MapScreenState extends State<MapScreen> {
           ),
           Positioned(
             top: 60.0,
-            left: 30.0,
+            left: 35.0,
             child: SafeArea(
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
