@@ -160,12 +160,17 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
-        final color = ref.watch(appThemeProvider).themeColor;
+        final theme = ref.watch(appThemeProvider).themeColor;
 
         return Scaffold(
-            backgroundColor: color.backgroundPrimary,
+            backgroundColor: theme.backgroundPrimary,
             appBar: AppBar(
-              title: const Text('Add Location'),
+              title:  Text('Add Bookmarks',
+              style: TextStyle(
+                          color: theme.text,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 26.0,
+                        ),),
               backgroundColor: const Color.fromRGBO(29, 196, 250, 1),
             ),
             body: Column(children: [
@@ -175,23 +180,13 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                 children: [
                   Expanded(
                     child: Container(
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            spreadRadius: 1,
-                            blurRadius: 5,
-                            offset: Offset(0, 3), // changes position of shadow
-                          ),
-                        ],
-                      ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           CustomSearchInput(
                             placeHolder: 'Search city',
                             controller: _searchController,
-                            onSubmitted: _searchWeatherByCity, width: 270,
+                            onSubmitted: _searchWeatherByCity, width: 350,
                           ),
                         ],
                       ),

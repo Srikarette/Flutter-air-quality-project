@@ -157,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       PrimaryButton(
                         title: 'Add Bookmarks',
-                        titleColor: Colors.grey,
+                        
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -170,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(width: 16),
                       PrimaryButton(
                         title: 'Bookmarks',
-                        titleColor: Colors.grey,
+                        
                         onPressed: () {
                           Navigator.push(
                             context,
