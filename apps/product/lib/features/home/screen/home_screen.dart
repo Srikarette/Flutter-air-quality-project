@@ -10,7 +10,6 @@ import 'package:product/features/home/domain/port/service.dart';
 import 'package:core_ui/widgets/composes/navbar/app-bar.dart';
 import 'package:product/features/home/presentation/widgets/component/card_status.dart';
 import 'package:product/features/home/presentation/widgets/component/card_status_search_result.dart';
-import 'package:product/features/home/presentation/widgets/component/location_list.dart';
 import 'package:product/features/home/screen/add_location_screen.dart';
 import 'package:product/features/home/screen/favotire_list_screen.dart';
 
