@@ -17,9 +17,9 @@ class FavoriteAdapter extends TypeAdapter<Favorite> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Favorite(
-      uid: fields[0] as int,
-      name: fields[1] as String,
-      country: fields[2] as String,
+      uid: fields[0] as num?,
+      name: fields[1] as String?,
+      country: fields[2] as String?,
       aqi: fields[3] as String?,
       stime: fields[4] as String?,
     );

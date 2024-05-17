@@ -11,7 +11,7 @@ import 'package:core_ui/widgets/composes/navbar/app-bar.dart';
 import 'package:product/features/home/presentation/widgets/component/card_status.dart';
 import 'package:product/features/home/presentation/widgets/component/card_status_search_result.dart';
 import 'package:product/features/home/screen/add_location_screen.dart';
-import 'package:product/features/home/screen/manage_location_screen.dart';
+import 'package:product/features/home/screen/favotire_list_screen.dart';
 
 String formatDateTime(String dateTimeString) {
   DateTime dateTime = DateTime.parse(dateTimeString);
@@ -163,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const AddLocationScreen(),
+                              builder: (context) =>  AddLocationScreen(),
                             ),
                           );
                         },
@@ -176,7 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const ManageScreen(),
+                              builder: (context) =>  FavoriteList(),
                             ),
                           );
                         },
