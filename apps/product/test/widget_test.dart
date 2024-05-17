@@ -1,30 +1,61 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
+import 'package:core_libs/dependency_injection/get_it.dart';
+import 'package:core_libs/network/dio_service.dart';
+import 'package:core_libs/network/http_services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+import 'package:product/features/home/data/mock/weatherMockData.dart';
+import 'package:product/features/home/data/models/weather.dart';
+import 'package:product/features/home/data/models/weatherByCity.dart';
+import 'package:product/features/home/data/repositories/weather_repository.dart';
 
-import 'package:product/main.dart';
+// Mock HttpService for testing WeatherRepository
+class MockHttpService extends Mock implements HttpService {}
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const WeatherHomePage());
+  // Register core services before tests
+  registerCoreServices();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  group('registerCoreServices Tests', () {
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    test('registerSingleton should register DioService correctly', () {
+      final httpService = getIt.get<HttpService>();
+      expect(httpService, isA<DioService>());
+    });
+  });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  group('WeatherRepository Tests', () {
+    late WeatherRepository weatherRepository;
+    late MockHttpService mockHttpService;
+    late MockCityData mockData;
+
+    setUp(() {
+      mockHttpService = MockHttpService();
+      weatherRepository = WeatherRepository();
+      mockData = MockCityData(); // Initialize mockData here
+    });
+
+    test('getCurrentLocationWeatherData returns AirQualityData', () async {
+      // Mock response
+      final mockResponse = mockData.data;
+
+      // Call the method
+      final result = await weatherRepository.getCurrentLocationWeatherData();
+
+      // Check the result
+      expect(result, isA<AirQualityData>());
+      expect(result.toJson(), mockResponse);
+    });
+
+    test('getWeatherDataByCity returns AirQualityDataByCity', () async {
+      // Mock response
+      final mockResponse = mockData.cityData;
+
+      // Call the method
+      final result = await weatherRepository.getWeatherDataByCity('Chiang mai');
+
+      // Check the result
+      expect(result, isA<AirQualityDataByCity>());
+      expect(result.toJson(), mockResponse);
+    });
   });
 }
