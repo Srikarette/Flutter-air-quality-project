@@ -7,6 +7,8 @@ import 'package:latlong2/latlong.dart';
 import '../../home/domain/entities/weatherToDisplay.dart';
 import '../../home/domain/entities/weatherToDisplayByCity.dart';
 import '../../home/domain/port/service.dart';
+import 'dart:async';
+
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -27,10 +29,13 @@ class _MapScreenState extends State<MapScreen> {
   List<Marker> markers = [];
   WeatherToDisplay? _currentWeather;
   WeatherToDisplayByCity? _currentSearchWeather;
-  final _pmValue = ['No filter','0-50', '51-100', '101-200', '<200'];
-  String _dropDownMenu = 'No filter';
-
+  final _pmValue = ['No Select filter','0-50', '51-100', '101-200', '<200'];
+  String _dropDownMenu = 'No Select filter';
+  final TextEditingController _searchController = TextEditingController();
+  String searchCity = "Chiang Mai";
   final dayCounter = 365;
+
+
 
   @override
   void initState() {
@@ -38,6 +43,7 @@ class _MapScreenState extends State<MapScreen> {
     _weatherService = getIt.get<WeatherProjectionService>();
     _weatherSearchService = getIt.get<WeatherProjectionService>();
     _fetchCurrentWeather();
+
   }
 
   Future<void> _fetchCurrentWeather() async {
@@ -90,7 +96,7 @@ class _MapScreenState extends State<MapScreen> {
 
   bool _isMarkerInRange(String pm25) {
 
-    if (_dropDownMenu == 'No filter') {
+    if (_dropDownMenu == 'No Select filter') {
       return true;
     }
 
@@ -192,18 +198,19 @@ class _MapScreenState extends State<MapScreen> {
           ),
         );
       }
-
       setState(() {
         markers = newMarkers;
       });
     } catch (error) {
-      print("Error fetching markers: $error");
+      error;
     }
   }
 
   void _handleCitySearch(String city) {
-    _fetchCurrentWeather();
-    fetchMarkerFromCity(city);
+    setState(() {
+      searchCity = city;
+    });
+    fetchMarkerFromCity(searchCity);
   }
 
   @override
@@ -213,91 +220,110 @@ class _MapScreenState extends State<MapScreen> {
     if (_currentWeather?.updateTime != null) {
       updateTime = formatDateTime(_currentWeather!.updateTime);
     }
-
     return Scaffold(
       body: _currentWeather == null
           ? const Center(
         child: CircularProgressIndicator(),
       )
-          : Stack(
+          : Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CustomSearchInput(
-            placeHolder: 'Search',
-            controller: TextEditingController(),
-            onSubmitted: _handleCitySearch, width: 300,
-          ),
-          FlutterMap(
-            options: MapOptions(
-              initialCenter: _currentWeather!.cityGeo,
-              initialZoom: 12,
-              minZoom: 3,
-              maxZoom: 18,
-            ),
-            children: [
-              TileLayer(
-                urlTemplate:
-                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.example.app',
-              ),
-              MarkerLayer(markers: markers),
-            ],
-          ),
-          Positioned(
-            top: 0,
-            left: 50,
-            right: 0,
-            child: SafeArea(
-              child: CustomSearchInput(
-                  controller: null, onSubmitted: (String word) => {}, width: 300,),
-            ),
-          ),
-          Positioned(
-            top: 60.0,
-            right: 35.0,
-            child: SafeArea(
-              child: Container(
-                padding: const EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16.0),
+          Expanded(
+            child: Stack(
+              children: [
+                FlutterMap(
+                  options: MapOptions(
+                    initialCenter: _currentWeather!.cityGeo,
+                    initialZoom: 7,
+                    minZoom: 3,
+                    maxZoom: 18,
+                  ),
+                  children: [
+                    TileLayer(
+                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      userAgentPackageName: 'com.example.app',
+                    ),
+                    MarkerLayer(markers: markers),
+                  ],
                 ),
-                child: Text(
-                  "Data at $updateTime",
-                  style: const TextStyle(
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.bold,
+                SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                    child: Column(
+                      children: [
+                        CustomSearchInput(
+                          controller: _searchController,
+                          onSubmitted: _handleCitySearch,
+                          width: MediaQuery.of(context).size.width * 0.86,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 13.0),
+                          child: Expanded(
+                            child: Row(
+                              children: [
+                                Center(
+                                  child: Container(
+                                   height: 35,
+                                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(16.0),
+                                    ),
+                                    child: Center(
+                                      child: DropdownButton<String>(
+                                        items: _pmValue.map((String item) {
+                                          return DropdownMenuItem(
+                                            value: item,
+                                            child: Text(item),
+                                          );
+                                        }).toList(),
+                                        onChanged: (String? newValue) {
+                                          setState(() {
+                                            _dropDownMenu = newValue!;
+                                          });
+                                          fetchMarkerFromCity(_currentWeather!.cityName);
+                                        },
+                                        value: _dropDownMenu,
+                                        underline: Container(),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 30,),
+                                Expanded(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: Container(
+                                          padding: const EdgeInsets.all(7.0),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(16.0),
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              "Data at $updateTime",
+                                              style: const TextStyle(
+                                                fontSize: 14.0,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ),
-          ),
-          Positioned(
-            top: 60.0,
-            left: 35.0,
-            child: SafeArea(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16.0),
-                ),
-                child: DropdownButton<String>(
-                  items: _pmValue.map((String item) {
-                    return DropdownMenuItem(
-                      value: item,
-                      child: Text(item),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _dropDownMenu = newValue!;
-                    });
-                    fetchMarkerFromCity(_currentWeather!.cityName);
-                  },
-                  value: _dropDownMenu,
-                  underline: Container(),
-                ),
-              ),
+              ],
             ),
           ),
         ],
