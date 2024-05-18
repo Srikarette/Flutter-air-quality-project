@@ -1,4 +1,6 @@
 import 'package:core_ui/widgets/composes/navbar/app-bar.dart';
+import 'package:core_libs/dependency_injection/get_it.dart';
+import 'package:core_ui/theme/theme_provider.dart';
 import 'package:core_ui/widgets/elements/botton/primary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,7 +13,7 @@ import 'package:product/features/home/screen/favotire_list_screen.dart';
 import 'package:geolocator/geolocator.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -61,9 +63,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(homeViewModelProvider);
+    final theme = ref.watch(appThemeProvider).themeColor;
 
     return MaterialApp(
       home: Scaffold(
+        backgroundColor: theme.backgroundPrimary,
         appBar: CustomAppBar(
           searchController: _searchController,
           onSearchSubmitted: (city) {
@@ -71,6 +75,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           },
         ),
         body: Stack(
+
           children: [
             if (state.loading) const Center(child: CircularProgressIndicator()),
             if (!state.loading && state.currentWeather != null) Padding(
