@@ -1,6 +1,5 @@
 import 'package:core_libs/dependency_injection/get_it.dart';
 import 'package:core_ui/theme/theme_provider.dart';
-import 'package:core_ui/widgets/composes/navbar/app-bar.dart';
 import 'package:core_ui/widgets/elements/input/search_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -130,17 +129,17 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text(
+        title: const Text(
           'Success',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.green,
           ),
         ),
-        content: Text('Added to bookmarks successfully!'),
+        content: const Text('Added to bookmarks successfully!'),
         actions: <Widget>[
           TextButton(
-            child: Text(
+            child: const Text(
               'OK',
               style: TextStyle(
                 color: Colors.blue,
@@ -171,7 +170,7 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                           fontWeight: FontWeight.bold,
                           fontSize: 26.0,
                         ),),
-              backgroundColor: const Color.fromRGBO(29, 196, 250, 1),
+              backgroundColor:  theme.backgroundSky,
             ),
             body: Column(children: [
               const SizedBox(height: 16),
@@ -199,35 +198,52 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                 Expanded(
                   child: SingleChildScrollView(
                     child: Column(
-                      children: _currentSearchWeather!.weatherDataList!
-                          .map((weatherData) {
-                        return Stack(
-                                      children: [
-                                        InkWell(
-                                          onTap: () {
-                                            addToFavorites(
-                                              weatherData.uid,
-                                              weatherData.station!.name,
-                                              weatherData.station!.country,
-                                              weatherData.aqi,
-                                              weatherData.time!.stime,
-                                            );
-                                            _showBookmarkDialog(context); // Show the pop-up
-                                          },
-                                          child: CardSearchStatus(
-                                            dailyAvg: weatherData.aqi ?? 'Unknown',
-                                            city: weatherData.station?.name ?? 'Unknown',
-                                            updateTime:
-                                                weatherData.time?.stime ?? 'Unknown',
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  }).toList(),
+                      children: [
+                        ..._currentSearchWeather!.weatherDataList!
+                            .map((weatherData) {
+                          return Stack(
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  addToFavorites(
+                                    weatherData.uid,
+                                    weatherData.station!.name,
+                                    weatherData.station!.country,
+                                    weatherData.aqi,
+                                    weatherData.time!.stime,
+                                  );
+                                  _showBookmarkDialog(context);
+                                },
+                                child: CardSearchStatus(
+                                  dailyAvg: weatherData.aqi ?? 'Unknown',
+                                  city: weatherData.station?.name ?? 'Unknown',
+                                  updateTime: weatherData.time?.stime ?? 'Unknown',
+                                ),
+                              ),
+                            ],
+                          );
+                        }),
+                        if (_isLoading)
+                          Visibility(
+                            visible: _isLoading,
+                            child: Container(
+                              color: Colors.black.withOpacity(0.5),
+                              child: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                 ),
-            ]));
+                if (_isLoading)
+                const Center(
+                  child: CircularProgressIndicator(),
+                ),
+            ],
+          ),
+        );
       },
     );
   }

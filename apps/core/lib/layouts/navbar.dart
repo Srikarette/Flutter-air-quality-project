@@ -48,15 +48,15 @@ class _BottomNavigationState extends State<BottomNavigation> {
               currentIndex: _currentIndex,
               items: [
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.home_outlined),
+                  icon: Icon(Icons.home_rounded),
                   label: 'Home',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.map_outlined),
+                  icon: Icon(Icons.map_rounded),
                   label: 'Map',
                 ),
               ],
-              selectedItemColor: color.text,
+              selectedItemColor: color.backgroundSky,
               selectedLabelStyle: TextStyle(fontSize: 15),
               unselectedItemColor: Colors.grey,
               unselectedLabelStyle: TextStyle(fontSize: 12),

@@ -43,6 +43,7 @@ class _MapScreenState extends State<MapScreen> {
     _weatherService = getIt.get<WeatherProjectionService>();
     _weatherSearchService = getIt.get<WeatherProjectionService>();
     _fetchCurrentWeather();
+
   }
 
   Future<void> _fetchCurrentWeather() async {
@@ -254,68 +255,71 @@ class _MapScreenState extends State<MapScreen> {
                         CustomSearchInput(
                           controller: _searchController,
                           onSubmitted: _handleCitySearch,
-                          width: MediaQuery.of(context).size.width * 0.86,
+                          width: MediaQuery.of(context).size.width * 0.84,
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 13.0),
                           child: Expanded(
-                            child: Row(
-                              children: [
-                                Center(
-                                  child: Container(
-                                   height: 35,
-                                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(16.0),
-                                    ),
-                                    child: Center(
-                                      child: DropdownButton<String>(
-                                        items: _pmValue.map((String item) {
-                                          return DropdownMenuItem(
-                                            value: item,
-                                            child: Text(item),
-                                          );
-                                        }).toList(),
-                                        onChanged: (String? newValue) {
-                                          setState(() {
-                                            _dropDownMenu = newValue!;
-                                          });
-                                          fetchMarkerFromCity(searchCity);
-                                        },
-                                        value: _dropDownMenu,
-                                        underline: Container(),
+                            child: Padding(
+                              padding: const EdgeInsets.all(6.0),
+                              child: Row(
+                                children: [
+                                  Center(
+                                    child: Container(
+                                     height: 35,
+                                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(16.0),
+                                      ),
+                                      child: Center(
+                                        child: DropdownButton<String>(
+                                          items: _pmValue.map((String item) {
+                                            return DropdownMenuItem(
+                                              value: item,
+                                              child: Text(item),
+                                            );
+                                          }).toList(),
+                                          onChanged: (String? newValue) {
+                                            setState(() {
+                                              _dropDownMenu = newValue!;
+                                            });
+                                            fetchMarkerFromCity(searchCity);
+                                          },
+                                          value: _dropDownMenu,
+                                          underline: Container(),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(width: 30,),
-                                Expanded(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: Container(
-                                          padding: const EdgeInsets.all(7.0),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.circular(16.0),
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              "Data at $updateTime",
-                                              style: const TextStyle(
-                                                fontSize: 14.0,
-                                                fontWeight: FontWeight.bold,
+                                  const SizedBox(width: 30,),
+                                  Expanded(
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          child: Container(
+                                            padding: const EdgeInsets.all(8.0),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius: BorderRadius.circular(16.0),
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                "Data at $updateTime",
+                                                style: const TextStyle(
+                                                  fontSize: 12.0,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
