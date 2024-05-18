@@ -29,4 +29,14 @@ class WeatherRepository implements WeatherDataProjection {
     final response = await httpService.get('/feed/$city/?token=$token');
     return AirQualityDataByCity.fromJson(response);
   }
+
+  @override
+  Future<AirQualityData> getCurrentLocationDataByLatLng(double lat, double lng) async{
+    final response = await httpService.get('/feed/geo:$lat;$lng/?token=$token');
+    if (response != null) {
+      return AirQualityData.fromJson(response);
+    } else {
+      throw Exception('Failed to fetch weather data: response is null');
+    }
+  }
 }
