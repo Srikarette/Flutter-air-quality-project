@@ -81,13 +81,13 @@ class _FavoriteListState extends State<FavoriteList> {
       return Scaffold(
         backgroundColor: color.backgroundPrimary,
          appBar: AppBar(
-              title:  const Text('Bookmarks',
+              title:  Text('Bookmarks',
               style: TextStyle(
-                          color: Colors.white,
+                          color: color.text,
                           fontWeight: FontWeight.bold,
                           fontSize: 26.0,
                         ),),
-              backgroundColor: const Color.fromRGBO(29, 196, 250, 1),
+              backgroundColor: color.backgroundSky,
             ),
         body: _isLoading
           ? const Center(
