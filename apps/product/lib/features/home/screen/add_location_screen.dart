@@ -170,7 +170,7 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                           fontWeight: FontWeight.bold,
                           fontSize: 26.0,
                         ),),
-              backgroundColor: const Color.fromRGBO(29, 196, 250, 1),
+              backgroundColor:  theme.backgroundSky,
             ),
             body: Column(children: [
               const SizedBox(height: 16),

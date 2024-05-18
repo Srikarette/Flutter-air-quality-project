@@ -214,7 +214,7 @@ class CardStatus extends ConsumerWidget {
         height: 15,
         child: Center(
           child: Text(
-            'Today:$updateTime',
+            'Today : $updateTime',
             style: TextStyle(
                           color: theme.text,
                           fontWeight: FontWeight.bold,

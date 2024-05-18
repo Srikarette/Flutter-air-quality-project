@@ -191,7 +191,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
                       const Text(
                         'Search result',
                         style: TextStyle(color: Colors.grey),
