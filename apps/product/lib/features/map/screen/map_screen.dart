@@ -43,7 +43,6 @@ class _MapScreenState extends State<MapScreen> {
     _weatherService = getIt.get<WeatherProjectionService>();
     _weatherSearchService = getIt.get<WeatherProjectionService>();
     _fetchCurrentWeather();
-
   }
 
   Future<void> _fetchCurrentWeather() async {
@@ -210,6 +209,7 @@ class _MapScreenState extends State<MapScreen> {
     setState(() {
       searchCity = city;
     });
+    // _fetchSearchWeather(searchCity);
     fetchMarkerFromCity(searchCity);
   }
 
@@ -281,7 +281,7 @@ class _MapScreenState extends State<MapScreen> {
                                           setState(() {
                                             _dropDownMenu = newValue!;
                                           });
-                                          fetchMarkerFromCity(_currentWeather!.cityName);
+                                          fetchMarkerFromCity(searchCity);
                                         },
                                         value: _dropDownMenu,
                                         underline: Container(),
