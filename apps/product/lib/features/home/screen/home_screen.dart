@@ -1,19 +1,17 @@
-import 'package:core_libs/dependency_injection/get_it.dart';
 import 'package:core_ui/widgets/composes/navbar/app-bar.dart';
 import 'package:core_ui/widgets/elements/botton/primary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:product/features/home/data/models/home_view_model.dart';
-import 'package:product/features/home/domain/entities/weatherToDisplay.dart';
-import 'package:product/features/home/domain/port/service.dart';
 import 'package:product/features/home/presentation/widgets/component/card_status.dart';
 import 'package:product/features/home/presentation/widgets/component/card_status_search_result.dart';
 import 'package:product/features/home/screen/add_location_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:product/features/home/screen/favotire_list_screen.dart';
+import 'package:geolocator/geolocator.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -26,8 +24,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(homeViewModelProvider.notifier).fetchCurrentWeather();
+      _checkLocationPermissionAndFetchWeather();
     });
+  }
+
+  Future<void> _checkLocationPermissionAndFetchWeather() async {
+    LocationPermission permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      print('Location permission denied.');
+      return;
+    }
+
+    Position? position = await Geolocator.getCurrentPosition();
+    if (position != null) {
+      final viewModel = ref.read(homeViewModelProvider.notifier);
+      await viewModel.fetchCurrentWeatherByLatLng(position.latitude, position.longitude);
+    } else {
+      print('Failed to get user location.');
+    }
   }
 
   String formatDateTime(String? dateTimeString) {
