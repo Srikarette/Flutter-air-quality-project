@@ -21,7 +21,7 @@ dependencies:
   core_ui:
     path: ../../packages/core_ui
   core:
-      path: ../core
+    path: ../core
   go_router: ^14.1.0
   flutter_riverpod: ^2.5.1
   riverpod_annotation: ^2.3.5
@@ -32,6 +32,8 @@ dependencies:
   latlong2: ^0.9.1
   flutter_map_cancellable_tile_provider: ^2.0.0
   mockito: ^5.4.4
+  geolocator: ^11.0.0
+  flutter_map_location_marker: ^8.0.8
 
 dev_dependencies:
   flutter_test:

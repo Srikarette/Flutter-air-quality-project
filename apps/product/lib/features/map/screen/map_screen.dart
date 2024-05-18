@@ -2,8 +2,11 @@ import 'package:core_libs/dependency_injection/get_it.dart';
 import 'package:core_ui/widgets/elements/input/search_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:product/features/home/domain/services/location_service.dart';
 import '../../home/domain/entities/weatherToDisplay.dart';
 import '../../home/domain/entities/weatherToDisplayByCity.dart';
 import '../../home/domain/port/service.dart';
@@ -29,13 +32,14 @@ class _MapScreenState extends State<MapScreen> {
   List<Marker> markers = [];
   WeatherToDisplay? _currentWeather;
   WeatherToDisplayByCity? _currentSearchWeather;
+  Position? _currentPosition;
   final _pmValue = ['No Select filter','0-50', '51-100', '101-200', '<200'];
   String _dropDownMenu = 'No Select filter';
   final TextEditingController _searchController = TextEditingController();
   String searchCity = "Chiang Mai";
   final dayCounter = 365;
 
-
+  late LatLng _latLng = const LatLng(0, 0);
 
   @override
   void initState() {
@@ -43,7 +47,7 @@ class _MapScreenState extends State<MapScreen> {
     _weatherService = getIt.get<WeatherProjectionService>();
     _weatherSearchService = getIt.get<WeatherProjectionService>();
     _fetchCurrentWeather();
-
+    _getCurrentLocation();
   }
 
   Future<void> _fetchCurrentWeather() async {
@@ -91,6 +95,20 @@ class _MapScreenState extends State<MapScreen> {
       setState(() {
         error;
       });
+    }
+  }
+
+  Future<void> _getCurrentLocation() async {
+    try {
+      final locationService = LocationService();
+      final position = await locationService.getCurrentLocation();
+      setState(() {
+        _currentPosition = position;
+        _latLng = LatLng(_currentPosition!.latitude, _currentPosition!.longitude);
+      });
+      print('Current Position: ${_currentPosition?.latitude}, ${_currentPosition?.longitude}');
+    } catch (error) {
+      print('Could not get location: $error');
     }
   }
 
@@ -234,16 +252,16 @@ class _MapScreenState extends State<MapScreen> {
               children: [
                 FlutterMap(
                   options: MapOptions(
-                    initialCenter: _currentWeather!.cityGeo,
-                    initialZoom: 7,
+                    initialCenter: _latLng,
+                    initialZoom: 16,
                     minZoom: 3,
-                    maxZoom: 18,
                   ),
                   children: [
                     TileLayer(
                       urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                       userAgentPackageName: 'com.example.app',
                     ),
+                    CurrentLocationLayer(),
                     MarkerLayer(markers: markers),
                   ],
                 ),

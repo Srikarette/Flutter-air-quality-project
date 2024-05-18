@@ -3,11 +3,13 @@ import 'package:core_ui/theme/theme_provider.dart';
 import 'package:core_ui/widgets/elements/botton/primary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:product/features/home/domain/entities/weatherToDisplay.dart';
 import 'package:product/features/home/domain/entities/weatherToDisplayByCity.dart';
 import 'package:product/features/home/domain/port/service.dart';
 import 'package:core_ui/widgets/composes/navbar/app-bar.dart';
+import 'package:product/features/home/domain/services/location_service.dart';
 import 'package:product/features/home/presentation/widgets/component/card_status.dart';
 import 'package:product/features/home/presentation/widgets/component/card_status_search_result.dart';
 import 'package:product/features/home/screen/add_location_screen.dart';
@@ -35,6 +37,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late WeatherProjectionService _weatherService;
   late WeatherProjectionService _weatherSearchService;
+  Position? _currentPosition;
   WeatherToDisplay? _currentWeather;
   WeatherToDisplayByCity? _currentSearchWeather;
 
@@ -49,6 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _weatherService = getIt.get<WeatherProjectionService>();
     _weatherSearchService = getIt.get<WeatherProjectionService>();
     _fetchCurrentWeather();
+    _getCurrentLocation();
   }
 
   Future<void> _fetchCurrentWeather() async {
@@ -70,6 +74,19 @@ class _HomeScreenState extends State<HomeScreen> {
         _isLoading = false;
       });
       _fetchSearchWeather('');
+    }
+  }
+
+  Future<void> _getCurrentLocation() async {
+    try {
+      final locationService = LocationService();
+      final position = await locationService.getCurrentLocation();
+      setState(() {
+        _currentPosition = position;
+      });
+      print('Current Position: ${_currentPosition?.latitude}, ${_currentPosition?.longitude}');
+    } catch (error) {
+      print('Could not get location: $error');
     }
   }
 
