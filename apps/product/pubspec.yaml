@@ -20,6 +20,8 @@ dependencies:
     path: ../../packages/core_libs
   core_ui:
     path: ../../packages/core_ui
+  core:
+      path: ../core
   go_router: ^14.1.0
   flutter_riverpod: ^2.5.1
   riverpod_annotation: ^2.3.5
