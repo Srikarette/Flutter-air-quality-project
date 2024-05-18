@@ -1,4 +1,5 @@
 import 'package:core_libs/dependency_injection/get_it.dart';
+import 'package:core_ui/theme/theme_provider.dart';
 import 'package:core_ui/widgets/composes/navbar/app-bar.dart';
 import 'package:core_ui/widgets/elements/botton/primary_button.dart';
 import 'package:flutter/material.dart';
@@ -47,9 +48,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(homeViewModelProvider);
+    final theme = ref.watch(appThemeProvider).themeColor;
 
     return MaterialApp(
       home: Scaffold(
+        backgroundColor: theme.backgroundPrimary,
         appBar: CustomAppBar(
           searchController: _searchController,
           onSearchSubmitted: (city) {
@@ -57,6 +60,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           },
         ),
         body: Stack(
+          
           children: [
             if (state.loading) const Center(child: CircularProgressIndicator()),
             if (!state.loading && state.currentWeather != null) Padding(
