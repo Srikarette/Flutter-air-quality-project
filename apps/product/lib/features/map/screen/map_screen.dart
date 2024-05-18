@@ -7,11 +7,11 @@ import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:product/features/home/domain/services/location_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../home/domain/entities/weatherToDisplay.dart';
 import '../../home/domain/entities/weatherToDisplayByCity.dart';
 import '../../home/domain/port/service.dart';
 import 'dart:async';
-
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -33,13 +33,15 @@ class _MapScreenState extends State<MapScreen> {
   WeatherToDisplay? _currentWeather;
   WeatherToDisplayByCity? _currentSearchWeather;
   Position? _currentPosition;
-  final _pmValue = ['No Select filter','0-50', '51-100', '101-200', '<200'];
+  final _pmValue = ['No Select filter', '0-50', '51-100', '101-200', '<200'];
   String _dropDownMenu = 'No Select filter';
   final TextEditingController _searchController = TextEditingController();
   String searchCity = "Chiang Mai";
   final dayCounter = 365;
 
   late LatLng _latLng = const LatLng(0, 0);
+  double _currentZoom = 16.0; // กำหนดค่าเริ่มต้นของ _currentZoom
+  bool _isInitialLoad = true; // ตัวแปรเพื่อตรวจสอบการโหลดครั้งแรก
 
   @override
   void initState() {
@@ -48,7 +50,27 @@ class _MapScreenState extends State<MapScreen> {
     _weatherSearchService = getIt.get<WeatherProjectionService>();
     _fetchCurrentWeather();
     _getCurrentLocation();
+    _loadSavedLocationAndZoom(); // โหลดค่าที่บันทึกไว้
   }
+
+ Future<void> _loadSavedLocationAndZoom() async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final double savedLat = prefs.getDouble('lat') ?? 0.0;
+  final double savedLng = prefs.getDouble('lng') ?? 0.0;
+  final double savedZoom = prefs.getDouble('zoom') ?? 16.0;
+
+  setState(() {
+    _latLng = LatLng(savedLat, savedLng);
+    _currentZoom = savedZoom;
+  });
+}
+
+Future<void> _saveLocationAndZoom() async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.setDouble('lat', _latLng.latitude);
+  await prefs.setDouble('lng', _latLng.longitude);
+  await prefs.setDouble('zoom', _currentZoom);
+}
 
   Future<void> _fetchCurrentWeather() async {
     try {
@@ -74,18 +96,15 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<void> _fetchSearchWeather(String city) async {
     try {
-      final weatherData =
-      await _weatherSearchService.getWeatherDataByCity(city);
+      final weatherData = await _weatherSearchService.getWeatherDataByCity(city);
       final filteredData = WeatherToDisplayByCity(
-        weatherDataList: weatherData.weatherDataList
-            ?.where((data) {
-          final dateTime = DateTime.parse(data.time?.stime ?? '');
-          final now = DateTime.now();
-          final isWithinPastYear =
-          dateTime.isAfter(now.subtract(Duration(days: dayCounter)));
-          final hasAqiData = data.aqi != "-";
-          return isWithinPastYear && hasAqiData;
-        }).toList() ??
+        weatherDataList: weatherData.weatherDataList?.where((data) {
+              final dateTime = DateTime.parse(data.time?.stime ?? '');
+              final now = DateTime.now();
+              final isWithinPastYear = dateTime.isAfter(now.subtract(Duration(days: dayCounter)));
+              final hasAqiData = data.aqi != "-";
+              return isWithinPastYear && hasAqiData;
+            }).toList() ??
             [],
       );
       setState(() {
@@ -113,7 +132,6 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   bool _isMarkerInRange(String pm25) {
-
     if (_dropDownMenu == 'No Select filter') {
       return true;
     }
@@ -216,11 +234,11 @@ class _MapScreenState extends State<MapScreen> {
           ),
         );
       }
-      setState(() {
+       setState(() {
         markers = newMarkers;
       });
     } catch (error) {
-      error;
+      // Handle error
     }
   }
 
@@ -228,13 +246,11 @@ class _MapScreenState extends State<MapScreen> {
     setState(() {
       searchCity = city;
     });
-    // _fetchSearchWeather(searchCity);
     fetchMarkerFromCity(searchCity);
   }
 
   @override
   Widget build(BuildContext context) {
-
     String updateTime = 'Unknown';
     if (_currentWeather?.updateTime != null) {
       updateTime = formatDateTime(_currentWeather!.updateTime);
@@ -242,114 +258,112 @@ class _MapScreenState extends State<MapScreen> {
     return Scaffold(
       body: _currentWeather == null
           ? const Center(
-        child: CircularProgressIndicator(),
-      )
+              child: CircularProgressIndicator(),
+            )
           : Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: Stack(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                FlutterMap(
-                  options: MapOptions(
-                    initialCenter: _latLng,
-                    initialZoom: 16,
-                    minZoom: 3,
-                  ),
-                  children: [
-                    TileLayer(
-                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      userAgentPackageName: 'com.example.app',
-                    ),
-                    CurrentLocationLayer(),
-                    MarkerLayer(markers: markers),
-                  ],
-                ),
-                SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                    child: Column(
-                      children: [
-                        CustomSearchInput(
-                          controller: _searchController,
-                          onSubmitted: _handleCitySearch,
-                          width: MediaQuery.of(context).size.width * 0.84,
+                Expanded(
+                  child: Stack(
+                    children: [
+                      FlutterMap(
+                        options: MapOptions(
+                          center: _latLng,
+                          zoom: _currentZoom,
+                          minZoom: 3,
+                          onPositionChanged: (MapPosition position, bool hasGesture) {
+                            if (hasGesture) {
+                              setState(() {
+                                _latLng = position.center!;
+                                _currentZoom = position.zoom!;
+                              });
+                              _saveLocationAndZoom();
+                            }
+                          },
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 13.0),
-                          child: Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(6.0),
-                              child: Row(
-                                children: [
-                                  Center(
-                                    child: Container(
-                                     height: 35,
+                        children: [
+  TileLayer(
+    urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    subdomains: ['a', 'b', 'c'],
+  ),
+  MarkerLayer(markers: markers),
+LocationMarkerLayer(
+  position: LocationMarkerPosition(
+    latitude: _currentPosition?.latitude ?? 0.0,
+    longitude: _currentPosition?.longitude ?? 0.0,
+    accuracy: _currentPosition?.accuracy ?? 0.0,
+  ),
+),],
+                      ),
+                      SafeArea(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                          child: Column(
+                            children: [
+                              CustomSearchInput(
+                                controller: _searchController,
+                                onSubmitted: _handleCitySearch,
+                                width: MediaQuery.of(context).size.width * 0.84,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 13.0),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      height: 35,
                                       padding: const EdgeInsets.symmetric(horizontal: 20),
                                       decoration: BoxDecoration(
                                         color: Colors.white,
                                         borderRadius: BorderRadius.circular(16.0),
                                       ),
-                                      child: Center(
-                                        child: DropdownButton<String>(
-                                          items: _pmValue.map((String item) {
-                                            return DropdownMenuItem(
-                                              value: item,
-                                              child: Text(item),
-                                            );
-                                          }).toList(),
-                                          onChanged: (String? newValue) {
-                                            setState(() {
-                                              _dropDownMenu = newValue!;
-                                            });
-                                            fetchMarkerFromCity(searchCity);
-                                          },
-                                          value: _dropDownMenu,
-                                          underline: Container(),
-                                        ),
+                                      child: DropdownButton<String>(
+                                        items: _pmValue.map((String item) {
+                                          return DropdownMenuItem(
+                                            value: item,
+                                            child: Text(item),
+                                          );
+                                        }).toList(),
+                                        onChanged: (String? newValue) {
+                                          setState(() {
+                                            _dropDownMenu = newValue!;
+                                          });
+                                          fetchMarkerFromCity(searchCity);
+                                        },
+                                        value: _dropDownMenu,
+                                        underline: Container(),
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 30,),
-                                  Expanded(
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Expanded(
-                                          child: Container(
-                                            padding: const EdgeInsets.all(8.0),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius: BorderRadius.circular(16.0),
-                                            ),
-                                            child: Center(
-                                              child: Text(
-                                                "Data at $updateTime",
-                                                style: const TextStyle(
-                                                  fontSize: 12.0,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
+                                    const SizedBox(width: 30),
+                                    Expanded(
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8.0),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(16.0),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            "Data at $updateTime",
+                                            style: const TextStyle(
+                                              fontSize: 12.0,
+                                              fontWeight: FontWeight.bold,
                                             ),
                                           ),
                                         ),
-                                      ],
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }
