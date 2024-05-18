@@ -21,11 +21,19 @@ class HomeViewModel extends _$HomeViewModel {
       currentSearchWeather: null
   );
 
-
   Future<void> fetchCurrentWeather() async {
     try {
       state = state.copyWith(loading: true, hasError: false);
-      final weatherData = await _weatherService.getCurrentLocationWeather();
+      await fetchCurrentWeatherByLatLng(0, 0); // Fetch default weather data
+    } catch (error) {
+      state = state.copyWith(hasError: true, loading: false);
+      await fetchSearchWeather('');
+    }
+  }
+
+  Future<void> fetchCurrentWeatherByLatLng(double lat, double lng) async {
+    try {
+      final weatherData = await _weatherService.getCurrentLocationDataByLatLng(lat, lng);
       state = state.copyWith(currentWeather: weatherData, loading: false);
       await fetchSearchWeather(weatherData.cityName ?? '');
     } catch (error) {
@@ -39,8 +47,13 @@ class HomeViewModel extends _$HomeViewModel {
       final locationService = LocationService();
       final position = await locationService.getCurrentLocation();
       state = state.copyWith(currentPosition: position);
+      if (position != null) {
+        await fetchCurrentWeatherByLatLng(position.latitude, position.longitude);
+      } else {
+        await fetchCurrentWeatherByLatLng(0, 0);
+      }
     } catch (error) {
-      // Handle location error
+      print('error: $error');
     }
   }
 

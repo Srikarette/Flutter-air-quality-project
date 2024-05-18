@@ -1,8 +1,11 @@
+import 'package:core_libs/dependency_injection/get_it.dart';
 import 'package:core_ui/widgets/composes/navbar/app-bar.dart';
 import 'package:core_ui/widgets/elements/botton/primary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:product/features/home/data/models/home_view_model.dart';
+import 'package:product/features/home/domain/entities/weatherToDisplay.dart';
+import 'package:product/features/home/domain/port/service.dart';
 import 'package:product/features/home/presentation/widgets/component/card_status.dart';
 import 'package:product/features/home/presentation/widgets/component/card_status_search_result.dart';
 import 'package:product/features/home/screen/add_location_screen.dart';
@@ -23,19 +26,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final viewModel = ref.read(homeViewModelProvider.notifier);
-      viewModel.fetchCurrentWeather();
-      viewModel.getCurrentLocation();
+      ref.read(homeViewModelProvider.notifier).fetchCurrentWeather();
     });
   }
 
-  String formatDateTime(String dateTimeString) {
+  String formatDateTime(String? dateTimeString) {
+    if (dateTimeString == null) return 'Unknown';
     DateTime dateTime = DateTime.parse(dateTimeString);
     DateFormat dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
     return dateFormat.format(dateTime);
   }
 
-  String formatDateDay(String dateTimeString) {
+  String formatDateDay(String? dateTimeString) {
+    if (dateTimeString == null) return 'Unknown';
     DateTime dateTime = DateTime.parse(dateTimeString);
     DateFormat dateFormat = DateFormat('EEEE');
     return dateFormat.format(dateTime);
@@ -56,18 +59,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         body: Stack(
           children: [
             if (state.loading) const Center(child: CircularProgressIndicator()),
-            if (!state.loading) Padding(
+            if (!state.loading && state.currentWeather != null) Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-                  if (state.currentWeather != null) CardStatus(
-                    dailyAvg: state.currentWeather!.pm25Forecast[2]?.avg ?? 0,
-                    tomorrowAvg: state.currentWeather!.pm25Forecast[3]?.avg ?? 0,
-                    dayAfterTomorrowAvg: state.currentWeather!.pm25Forecast[4]?.avg ?? 0,
-                    city: state.currentWeather!.cityName ?? 'Unknown',
-                    updateTime: state.currentWeather!.updateTime != null ? formatDateTime(state.currentWeather!.updateTime!) : 'Unknown',
-                    tomorrowDay: state.currentWeather!.pm25Forecast[3]?.day != null ? formatDateDay(state.currentWeather!.pm25Forecast[3]!.day!) : 'Unknown',
-                    dayAfterTomorrowDay: state.currentWeather!.pm25Forecast[4]?.day != null ? formatDateDay(state.currentWeather!.pm25Forecast[4]!.day!) : 'Unknown',
+                  CardStatus(
+                    dailyAvg: state.currentWeather!.pm25Forecast[2].avg ?? 0,
+                    tomorrowAvg: state.currentWeather!.pm25Forecast[3].avg ?? 0,
+                    dayAfterTomorrowAvg: state.currentWeather!.pm25Forecast[4].avg ?? 0,
+                    city: state.currentWeather!.cityName,
+                    updateTime: formatDateTime(state.currentWeather!.updateTime),
+                    tomorrowDay: formatDateDay(state.currentWeather!.pm25Forecast[3].day),
+                    dayAfterTomorrowDay: formatDateDay(state.currentWeather!.pm25Forecast[4].day),
                   ),
                   const SizedBox(height: 12),
                   Row(

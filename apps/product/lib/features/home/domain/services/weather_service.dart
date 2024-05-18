@@ -24,4 +24,10 @@ class WeatherService extends WeatherProjectionService {
     final rawWeather = await repository.getWeatherDataByCity(city);
     return WeatherToDisplayByCity.fromSearchLocation(rawWeather);
   }
+
+  @override
+  Future<WeatherToDisplay> getCurrentLocationDataByLatLng(double lat, double lng) async{
+    final rawWeather = await repository.getCurrentLocationDataByLatLng(lat, lng);
+    return WeatherToDisplay.fromAirQualityData(rawWeather);
+  }
 }
