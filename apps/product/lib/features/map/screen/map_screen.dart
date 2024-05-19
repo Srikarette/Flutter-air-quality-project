@@ -6,15 +6,16 @@ import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:product/features/home/domain/services/location_service.dart';
 import '../../home/domain/entities/weatherToDisplay.dart';
 import '../../home/domain/entities/weatherToDisplayByCity.dart';
 import '../../home/domain/port/service.dart';
 import 'dart:async';
 
+import '../../home/domain/services/location_service.dart';
 
 class MapScreen extends StatefulWidget {
-  const MapScreen({super.key});
+  final LocationService? locationService;
+  const MapScreen({super.key,this.locationService});
 
   @override
   State<MapScreen> createState() => _MapScreenState();
@@ -38,8 +39,12 @@ class _MapScreenState extends State<MapScreen> {
   final TextEditingController _searchController = TextEditingController();
   String searchCity = "Chiang Mai";
   final dayCounter = 365;
+  final MapController _mapController = MapController();
+  final StreamController<double?> _alignPositionStreamController = StreamController<double?>();
+  AlignOnUpdate _alignPositionOnUpdate = AlignOnUpdate.always;
 
-  late LatLng initialCenterData;
+  late LatLng _latLng = const LatLng(18.796207347141962, 98.98664229946046);
+
   @override
   void initState() {
     super.initState();
@@ -49,16 +54,13 @@ class _MapScreenState extends State<MapScreen> {
     _getCurrentLocation();
   }
 
-
   Future<void> _fetchCurrentWeather() async {
     try {
       final weatherData = await _weatherService.getCurrentLocationWeather();
-
       setState(() {
         _currentWeather = weatherData;
-        fetchMarkerFromCity(_currentWeather!.cityName);
+        _fetchMarkerFromCity(_currentWeather!.cityName);
       });
-
       if (_currentWeather?.cityGeo != null) {
         _currentWeather!.cityGeo;
       } else {
@@ -72,31 +74,19 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-
-  void _followCurrentLocation() async {
-    // Retrieve current location and update the map to center on it
-    try {
-      final locationService = LocationService();
-      final position = await locationService.getCurrentLocation();
-      setState(() {
-        _currentPosition = position;
-      });
-    } catch (error) {
-      print('Could not follow current location: $error');
-    }
-  }
-
   Future<void> _fetchSearchWeather(String city) async {
     try {
-      final weatherData = await _weatherSearchService.getWeatherDataByCity(city);
+      final weatherData =
+      await _weatherSearchService.getWeatherDataByCity(city);
       final filteredData = WeatherToDisplayByCity(
         weatherDataList: weatherData.weatherDataList?.where((data) {
-              final dateTime = DateTime.parse(data.time?.stime ?? '');
-              final now = DateTime.now();
-              final isWithinPastYear = dateTime.isAfter(now.subtract(Duration(days: dayCounter)));
-              final hasAqiData = data.aqi != "-";
-              return isWithinPastYear && hasAqiData;
-            }).toList() ??
+          final dateTime = DateTime.parse(data.time?.stime ?? '');
+          final now = DateTime.now();
+          final isWithinPastYear =
+          dateTime.isAfter(now.subtract(Duration(days: dayCounter)));
+          final hasAqiData = data.aqi != "-";
+          return isWithinPastYear && hasAqiData;
+        }).toList() ??
             [],
       );
       setState(() {
@@ -111,17 +101,38 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<void> _getCurrentLocation() async {
     try {
-      final locationService = LocationService();
-      final position = await locationService.getCurrentLocation();
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        print('Location service is disabled.');
+        return;
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          print('Location permissions are denied.');
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        print('Location permissions are permanently denied.');
+        return;
+      }
+
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+
       setState(() {
         _currentPosition = position;
-        initialCenterData = LatLng(_currentPosition!.latitude, _currentPosition!.longitude);
+        _latLng = LatLng(position.latitude, position.longitude);
       });
-      print('Current Position: ${_currentPosition?.latitude}, ${_currentPosition?.longitude}');
     } catch (error) {
-      print('Could not get location: $error');
+      print('Error getting current location: $error');
     }
   }
+
 
   bool _isMarkerInRange(String pm25) {
     if (_dropDownMenu == 'No Select filter') {
@@ -141,7 +152,7 @@ class _MapScreenState extends State<MapScreen> {
     return false;
   }
 
-  Color getColorForPm25(String pm25) {
+  Color _getColorForPm25(String pm25) {
     int value = int.tryParse(pm25) ?? 0;
 
     if (_dropDownMenu == '0-50' && value >= 0 && value <= 50) {
@@ -166,16 +177,21 @@ class _MapScreenState extends State<MapScreen> {
     return Colors.transparent;
   }
 
-  Future<void> fetchMarkerFromCity(String city) async {
+  Future<void> _fetchMarkerFromCity(String city) async {
     try {
-      final weatherData = await _weatherSearchService.getWeatherDataByCity(city);
+      final weatherData =
+      await _weatherSearchService.getWeatherDataByCity(city);
       final filteredData = weatherData.weatherDataList?.where((data) {
         final dateTime = DateTime.parse(data.time?.stime ?? '');
         final now = DateTime.now();
-        final isWithinPastYear = dateTime.isAfter(now.subtract(Duration(days: dayCounter)));
+        final isWithinPastYear =
+        dateTime.isAfter(now.subtract(Duration(days: dayCounter)));
         final hasAqiData = data.aqi != "-";
-        return isWithinPastYear && hasAqiData && _isMarkerInRange(data.aqi ?? '');
-      }).toList() ?? [];
+        return isWithinPastYear &&
+            hasAqiData &&
+            _isMarkerInRange(data.aqi ?? '');
+      }).toList() ??
+          [];
 
       List<Marker> newMarkers = [];
       for (var data in filteredData) {
@@ -211,7 +227,7 @@ class _MapScreenState extends State<MapScreen> {
               child: Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: getColorForPm25(pm25),
+                  color: _getColorForPm25(pm25),
                 ),
                 alignment: Alignment.center,
                 child: Text(
@@ -226,11 +242,11 @@ class _MapScreenState extends State<MapScreen> {
           ),
         );
       }
-       setState(() {
+      setState(() {
         markers = newMarkers;
       });
     } catch (error) {
-      // Handle error
+      error;
     }
   }
 
@@ -238,7 +254,8 @@ class _MapScreenState extends State<MapScreen> {
     setState(() {
       searchCity = city;
     });
-    fetchMarkerFromCity(searchCity);
+    // _fetchSearchWeather(searchCity);
+    _fetchMarkerFromCity(searchCity);
   }
 
   @override
@@ -250,62 +267,73 @@ class _MapScreenState extends State<MapScreen> {
     return Scaffold(
       body: _currentWeather == null
           ? const Center(
-              child: CircularProgressIndicator(),
-            )
+        child: CircularProgressIndicator(),
+      )
           : Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: Stack(
               children: [
-                Expanded(
-                  child: Stack(
-                    children: [
-                      FlutterMap(
-                        options: MapOptions(
-                          initialCenter: initialCenterData,
-                          initialZoom: 16,
-                          minZoom: 3,
+                FlutterMap(
+                  mapController: _mapController,
+                  options: MapOptions(
+                    initialCenter: _latLng,
+                    initialZoom: 16,
+                    minZoom: 3,
+                    onPositionChanged: (MapPosition position, bool hasGesture) {
+                      if (hasGesture && _alignPositionOnUpdate != AlignOnUpdate.never) {
+                        setState(
+                              () => _alignPositionOnUpdate = AlignOnUpdate.never,
+                        );
+                      }
+                    },
+                  ),
+                  children: [
+                    TileLayer(
+                      urlTemplate:
+                      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      userAgentPackageName: 'com.example.app',
+                    ),
+                    CurrentLocationLayer(
+                      alignPositionStream: _alignPositionStreamController.stream,
+                      alignPositionOnUpdate: _alignPositionOnUpdate,
+                    ),
+                    MarkerLayer(markers: markers),
+
+                  ],
+                ),
+                SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                    child: Column(
+                      children: [
+                        CustomSearchInput(
+                          controller: _searchController,
+                          onSubmitted: _handleCitySearch,
+                          width: MediaQuery.of(context).size.width * 0.84,
                         ),
-                        children: [
-                          TileLayer(
-                            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                            subdomains: const ['a','b','c'],
-                          ),
-                          MarkerLayer(markers: markers),
-                        LocationMarkerLayer(
-                          position: LocationMarkerPosition(
-                            latitude: _currentPosition?.latitude ?? 0.0,
-                            longitude: _currentPosition?.longitude ?? 0.0,
-                            accuracy: _currentPosition?.accuracy ?? 0.0,
-                          ),
-                        ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 30.0,vertical: 200),
-                            child: FloatingActionButton(onPressed: _followCurrentLocation),
-                          )
-                        ],
-                      ),
-                      SafeArea(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                          child: Column(
-                            children: [
-                              CustomSearchInput(
-                                controller: _searchController,
-                                onSubmitted: _handleCitySearch,
-                                width: MediaQuery.of(context).size.width * 0.84,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 13.0),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      height: 35,
-                                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(16.0),
-                                      ),
+                        Padding(
+                          padding:
+                          const EdgeInsets.symmetric(vertical: 13.0),
+                          child: Padding(
+                            padding: const EdgeInsets.all(6.0),
+                            child: Row(
+                              children: [
+                                Center(
+                                  child: Container(
+                                    height: 35,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius:
+                                      BorderRadius.circular(16.0),
+                                    ),
+                                    child: Center(
                                       child: DropdownButton<String>(
-                                        items: _pmValue.map((String item) {
+                                        items:
+                                        _pmValue.map((String item) {
                                           return DropdownMenuItem(
                                             value: item,
                                             child: Text(item),
@@ -315,43 +343,72 @@ class _MapScreenState extends State<MapScreen> {
                                           setState(() {
                                             _dropDownMenu = newValue!;
                                           });
-                                          fetchMarkerFromCity(searchCity);
+                                          _fetchMarkerFromCity(
+                                              searchCity);
                                         },
                                         value: _dropDownMenu,
                                         underline: Container(),
                                       ),
                                     ),
-                                    const SizedBox(width: 30),
-                                    Expanded(
-                                      child: Container(
-                                        padding: const EdgeInsets.all(8.0),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(16.0),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            "Data at $updateTime",
-                                            style: const TextStyle(
-                                              fontSize: 12.0,
-                                              fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 30,
+                                ),
+                                Expanded(
+                                  child: Row(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: Container(
+                                          padding:
+                                          const EdgeInsets.all(8.0),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                            BorderRadius.circular(
+                                                16.0),
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              "Data at $updateTime",
+                                              style: const TextStyle(
+                                                fontSize: 14.0,
+                                                fontWeight:
+                                                FontWeight.bold,
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() => _alignPositionOnUpdate = AlignOnUpdate.always);
+          _alignPositionStreamController.add(16); // Zoom level
+        },
+        child: const Icon(Icons.my_location),
+      ),
+
     );
   }
 }
+
+//backup before install shared
