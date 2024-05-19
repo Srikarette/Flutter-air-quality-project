@@ -1,14 +1,12 @@
-import 'package:core_libs/dependency_injection/get_it.dart';
 import 'package:core_ui/theme/theme_provider.dart';
 import 'package:core_ui/widgets/elements/input/search_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:product/features/home/data/models/favorite.dart';
-import 'package:product/features/home/domain/entities/weatherToDisplay.dart';
-import 'package:product/features/home/domain/entities/weatherToDisplayByCity.dart';
-import 'package:product/features/home/domain/port/service.dart';
+import 'package:product/features/home/data/models/home_view_model.dart';
 import 'package:product/features/home/presentation/widgets/component/card_status_search_result.dart';
 
 String formatDateTime(String dateTimeString) {
@@ -23,156 +21,98 @@ String formatDateDay(String dateTimeString) {
   return dateFormat.format(dateTime);
 }
 
-class AddLocationScreen extends StatefulWidget {
-  const AddLocationScreen({super.key});
+class AddLocationScreen extends ConsumerStatefulWidget {
+  const AddLocationScreen({Key? key}) : super(key: key);
 
   @override
-  State<AddLocationScreen> createState() => _AddLocationScreenState();
+  _AddLocationScreenState createState() => _AddLocationScreenState();
 }
 
-class _AddLocationScreenState extends State<AddLocationScreen> {
-  late WeatherProjectionService _weatherService;
-  late WeatherProjectionService _weatherSearchService;
-  WeatherToDisplay? _currentWeather;
-  WeatherToDisplayByCity? _currentSearchWeather;
-
-  final dayCounter = 365;
+class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
   final TextEditingController _searchController = TextEditingController();
-  bool _isLoading = true;
-  bool _hasError = false;
 
   @override
   void initState() {
     super.initState();
-    _weatherService = getIt.get<WeatherProjectionService>();
-    _weatherSearchService = getIt.get<WeatherProjectionService>();
-    _fetchCurrentWeather();
+    _checkLocationPermissionAndFetchWeather();
   }
 
-   Future<void> _fetchCurrentWeather() async {
-    try {
-      setState(() {
-        _isLoading = true;
-        _hasError = false;
-      });
+  Future<void> _checkLocationPermissionAndFetchWeather() async {
+    LocationPermission permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      print('Location permission denied.');
+      return;
+    }
 
-      final weatherData = await _weatherService.getCurrentLocationWeather();
-      setState(() {
-        _currentWeather = weatherData;
-        _isLoading = false;
-      });
-
-      if (_currentWeather?.cityName != null) {
-        await _fetchSearchWeather(_currentWeather!.cityName);
-      } else {
-        await _fetchSearchWeather('');
-      }
-    } catch (error) {
-      setState(() {
-        _hasError = true;
-        _isLoading = false;
-      });
-      await _fetchSearchWeather('');
+    Position? position = await Geolocator.getCurrentPosition();
+    if (position != null) {
+      final viewModel = ref.read(homeViewModelProvider.notifier);
+      await viewModel.fetchCurrentWeatherByLatLng(position.latitude, position.longitude);
+    } else {
+      print('Failed to get user location.');
     }
   }
 
-  Future<void> _fetchSearchWeather(String city) async {
-    try {
-      setState(() {
-        _isLoading = true;
-        _hasError = false;
-      });
-
-      final weatherData = await _weatherSearchService.getWeatherDataByCity(city);
-      final filteredData = WeatherToDisplayByCity(
-        weatherDataList: weatherData.weatherDataList?.where((data) {
-              final dateTime = DateTime.parse(data.time?.stime ?? '');
-              final now = DateTime.now();
-              final isWithinPastYear =
-                  dateTime.isAfter(now.subtract(Duration(days: dayCounter)));
-              final hasAqiData = data.aqi != "-";
-              return isWithinPastYear && hasAqiData;
-            }).toList() ??
-            [],
-      );
-
-      setState(() {
-        _currentSearchWeather = filteredData;
-        _isLoading = false;
-      });
-    } catch (error) {
-      setState(() {
-        _hasError = true;
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<void> _searchWeatherByCity(String city) async {
-    setState(() {
-      _isLoading = true;
-      _hasError = false;
-    });
-
-    await _fetchSearchWeather(city);
-  }
-
-  void addToFavorites(num? uid, String? name, String? country, String? aqi,
-      String? stime) async {
+  void addToFavorites(num? uid, String? name, String? country, String? aqi, String? stime) async {
     var box = Hive.box<Favorite>('favorites');
     var favorite = Favorite(
         uid: uid, name: name, country: country, aqi: aqi, stime: stime);
     await box.put(uid, favorite);
   }
+
   void _showBookmarkDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text(
-          'Success',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.green,
-          ),
-        ),
-        content: const Text('Added to bookmarks successfully!'),
-        actions: <Widget>[
-          TextButton(
-            child: const Text(
-              'OK',
-              style: TextStyle(
-                color: Colors.blue,
-              ),
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Success',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.green,
             ),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
           ),
-        ],
-      );
-    },
-  );
-}
+          content: const Text('Added to bookmarks successfully!'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text(
+                'OK',
+                style: TextStyle(
+                  color: Colors.blue,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
         final theme = ref.watch(appThemeProvider).themeColor;
+        final state = ref.watch(homeViewModelProvider);
 
         return Scaffold(
-            backgroundColor: theme.backgroundPrimary,
-            appBar: AppBar(
-              title:  Text('Add Bookmarks',
+          backgroundColor: theme.backgroundPrimary,
+          appBar: AppBar(
+            title: Text(
+              'Add Bookmarks',
               style: TextStyle(
-                          color: theme.text,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 26.0,
-                        ),),
-              backgroundColor:  theme.backgroundSky,
+                color: theme.text,
+                fontWeight: FontWeight.bold,
+                fontSize: 26.0,
+              ),
             ),
-            body: Column(children: [
+            backgroundColor: theme.backgroundSky,
+          ),
+          body: Column(
+            children: [
               const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -185,7 +125,11 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                           CustomSearchInput(
                             placeHolder: 'Search city',
                             controller: _searchController,
-                            onSubmitted: _searchWeatherByCity, width: 350,
+                            onSubmitted: (city) async {
+                              final viewModel = ref.read(homeViewModelProvider.notifier);
+                              await viewModel.searchWeatherByCity(city);
+                            },
+                            width: 350,
                           ),
                         ],
                       ),
@@ -194,23 +138,22 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                 ],
               ),
               const SizedBox(height: 16),
-              if (_currentSearchWeather?.weatherDataList != null)
+              if (state.currentSearchWeather != null)
                 Expanded(
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        ..._currentSearchWeather!.weatherDataList!
-                            .map((weatherData) {
+                        ...state.currentSearchWeather!.weatherDataList!.map((weatherData) {
                           return Stack(
                             children: [
                               InkWell(
                                 onTap: () {
                                   addToFavorites(
                                     weatherData.uid,
-                                    weatherData.station!.name,
-                                    weatherData.station!.country,
+                                    weatherData.station?.name,
+                                    weatherData.station?.country,
                                     weatherData.aqi,
-                                    weatherData.time!.stime,
+                                    weatherData.time?.stime,
                                   );
                                   _showBookmarkDialog(context);
                                 },
@@ -223,9 +166,9 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                             ],
                           );
                         }),
-                        if (_isLoading)
+                        if (state.loading)
                           Visibility(
-                            visible: _isLoading,
+                            visible: state.loading,
                             child: Container(
                               color: Colors.black.withOpacity(0.5),
                               child: const Center(
@@ -237,7 +180,7 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                     ),
                   ),
                 ),
-                if (_isLoading)
+              if (state.loading)
                 const Center(
                   child: CircularProgressIndicator(),
                 ),
