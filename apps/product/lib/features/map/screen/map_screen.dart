@@ -39,7 +39,6 @@ class _MapScreenState extends State<MapScreen> {
   final TextEditingController _searchController = TextEditingController();
   String searchCity = "Chiang Mai";
   final dayCounter = 365;
-  late final LocationService locationService;
   final MapController _mapController = MapController();
   final StreamController<double?> _alignPositionStreamController = StreamController<double?>();
   AlignOnUpdate _alignPositionOnUpdate = AlignOnUpdate.always;
