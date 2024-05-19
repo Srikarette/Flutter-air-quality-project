@@ -7,11 +7,11 @@ import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:product/features/home/domain/services/location_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../home/domain/entities/weatherToDisplay.dart';
 import '../../home/domain/entities/weatherToDisplayByCity.dart';
 import '../../home/domain/port/service.dart';
 import 'dart:async';
+
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -39,10 +39,7 @@ class _MapScreenState extends State<MapScreen> {
   String searchCity = "Chiang Mai";
   final dayCounter = 365;
 
-  late LatLng _latLng = const LatLng(0, 0);
-  double _currentZoom = 16.0; // กำหนดค่าเริ่มต้นของ _currentZoom
-  bool _isInitialLoad = true; // ตัวแปรเพื่อตรวจสอบการโหลดครั้งแรก
-
+  late LatLng initialCenterData;
   @override
   void initState() {
     super.initState();
@@ -50,27 +47,8 @@ class _MapScreenState extends State<MapScreen> {
     _weatherSearchService = getIt.get<WeatherProjectionService>();
     _fetchCurrentWeather();
     _getCurrentLocation();
-    _loadSavedLocationAndZoom(); // โหลดค่าที่บันทึกไว้
   }
 
- Future<void> _loadSavedLocationAndZoom() async {
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
-  final double savedLat = prefs.getDouble('lat') ?? 0.0;
-  final double savedLng = prefs.getDouble('lng') ?? 0.0;
-  final double savedZoom = prefs.getDouble('zoom') ?? 16.0;
-
-  setState(() {
-    _latLng = LatLng(savedLat, savedLng);
-    _currentZoom = savedZoom;
-  });
-}
-
-Future<void> _saveLocationAndZoom() async {
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
-  await prefs.setDouble('lat', _latLng.latitude);
-  await prefs.setDouble('lng', _latLng.longitude);
-  await prefs.setDouble('zoom', _currentZoom);
-}
 
   Future<void> _fetchCurrentWeather() async {
     try {
@@ -91,6 +69,20 @@ Future<void> _saveLocationAndZoom() async {
         // Handle error
       });
       _fetchSearchWeather('');
+    }
+  }
+
+
+  void _followCurrentLocation() async {
+    // Retrieve current location and update the map to center on it
+    try {
+      final locationService = LocationService();
+      final position = await locationService.getCurrentLocation();
+      setState(() {
+        _currentPosition = position;
+      });
+    } catch (error) {
+      print('Could not follow current location: $error');
     }
   }
 
@@ -123,7 +115,7 @@ Future<void> _saveLocationAndZoom() async {
       final position = await locationService.getCurrentLocation();
       setState(() {
         _currentPosition = position;
-        _latLng = LatLng(_currentPosition!.latitude, _currentPosition!.longitude);
+        initialCenterData = LatLng(_currentPosition!.latitude, _currentPosition!.longitude);
       });
       print('Current Position: ${_currentPosition?.latitude}, ${_currentPosition?.longitude}');
     } catch (error) {
@@ -268,32 +260,28 @@ Future<void> _saveLocationAndZoom() async {
                     children: [
                       FlutterMap(
                         options: MapOptions(
-                          center: _latLng,
-                          zoom: _currentZoom,
+                          initialCenter: initialCenterData,
+                          initialZoom: 16,
                           minZoom: 3,
-                          onPositionChanged: (MapPosition position, bool hasGesture) {
-                            if (hasGesture) {
-                              setState(() {
-                                _latLng = position.center!;
-                                _currentZoom = position.zoom!;
-                              });
-                              _saveLocationAndZoom();
-                            }
-                          },
                         ),
                         children: [
-  TileLayer(
-    urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    subdomains: ['a', 'b', 'c'],
-  ),
-  MarkerLayer(markers: markers),
-LocationMarkerLayer(
-  position: LocationMarkerPosition(
-    latitude: _currentPosition?.latitude ?? 0.0,
-    longitude: _currentPosition?.longitude ?? 0.0,
-    accuracy: _currentPosition?.accuracy ?? 0.0,
-  ),
-),],
+                          TileLayer(
+                            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            subdomains: const ['a','b','c'],
+                          ),
+                          MarkerLayer(markers: markers),
+                        LocationMarkerLayer(
+                          position: LocationMarkerPosition(
+                            latitude: _currentPosition?.latitude ?? 0.0,
+                            longitude: _currentPosition?.longitude ?? 0.0,
+                            accuracy: _currentPosition?.accuracy ?? 0.0,
+                          ),
+                        ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 30.0,vertical: 200),
+                            child: FloatingActionButton(onPressed: _followCurrentLocation),
+                          )
+                        ],
                       ),
                       SafeArea(
                         child: Padding(
